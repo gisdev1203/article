@@ -28,7 +28,7 @@ namespace ProjectTemplate.Controllers
         public IActionResult PageTest()
         {
             TestDTO dto = new TestDTO();
-            dto.TestObjects = entryRepository.GetDataFromTestTable(2);
+            dto.TestObjects = entryRepository.GetDataFromTestTable(1);
             return View("PageTest", dto);
         }
     }
