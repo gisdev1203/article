@@ -5,6 +5,6 @@ namespace ProjectTemplate.PresentationModel
 {
     public class ArticleDTO
     {
-        public List<ArticleObject> ArticleObjects { get; set; } = new List<ArticleObject>();
+        public List<Article> ArticleObjects { get; set; } = new List<Article>();
     }
 }

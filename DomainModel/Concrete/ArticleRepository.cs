@@ -12,7 +12,7 @@ using System.Xml.Linq;
 
 namespace DomainModel.Concrete
 {
-    public class EntryRepository : BaseRepository, IEntryRepository
+    public class ArticleRepository : BaseRepository, IArticleRepository
     {
         public List<TestObject> GetDataFromTestTable(int id)
         {
@@ -20,22 +20,29 @@ namespace DomainModel.Concrete
             return Query<TestObject>(sql, new { A = id });
         }
 
-        public List<ArticleObject> GetDataFromArticleTable()
+        public List<Article> ListArticles(ArticleFilter filter)
         {
-            string sql = "SELECT id, name FROM article";
-            return Query<ArticleObject>(sql);
+            dynamic parameters = new ExpandoObject();
+            string sql = "SELECT id, name FROM article WHERE is_deleted = false";
+
+            if (filter.Id.HasValue)
+            {
+                parameters.A = filter.Id.Value;
+                sql += " AND id = @A";
+            }
+            return Query<Article>(sql, parameters);
         }
         
-        public List<ArticleObject> GetDataFromArticleTableById(int id)
+        public List<Article> GetArticle(int id)
         {
             string sql = "SELECT id, name FROM article WHERE id = @A";
-            return Query<ArticleObject>(sql, new { A = id });
+            return Query<Article>(sql, new { A = id });
         }
 
-        public ArticleObject GetDataFromArticleTableLastOrDefault()
+        public Article GetDataFromArticleTableLastOrDefault()
         {
             string sql = "SELECT id, name FROM article order by 1 desc limit 1";
-            return QueryFirstOrDefault<ArticleObject>(sql);
+            return QueryFirstOrDefault<Article>(sql);
         }
 
         public int CreateNewArticle()
@@ -45,10 +52,8 @@ namespace DomainModel.Concrete
             var newArticleName = "Article test " + newArticleNumber;
 
             //TODO: We will change the article name later
-            string sql = "INSERT INTO public.article(name) VALUES('" + newArticleName + "')";
-            ExecuteScalar<ArticleObject>(sql);
-
-            return GetDataFromArticleTableLastOrDefault().Id;
+            string sql = "INSERT INTO article(name, is_deleted) VALUES(@A, false) RETURNING Id";
+            return ExecuteScalar(sql, new { A = newArticleName });
         }
     }
 }

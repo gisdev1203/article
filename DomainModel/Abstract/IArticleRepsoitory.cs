@@ -5,12 +5,12 @@ using System.Text;
 
 namespace DomainModel.Abstract
 {
-    public interface IEntryRepository
+    public interface IArticleRepository
     {
         List<TestObject> GetDataFromTestTable(int id);
-        List<ArticleObject> GetDataFromArticleTable();
-        List<ArticleObject> GetDataFromArticleTableById(int id);
-        ArticleObject GetDataFromArticleTableLastOrDefault();
+        List<Article> ListArticles(ArticleFilter filter);
+        List<Article> GetArticle(int id);
+        Article GetDataFromArticleTableLastOrDefault();
         int CreateNewArticle();
     }
 }

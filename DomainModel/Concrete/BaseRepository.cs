@@ -122,7 +122,7 @@ namespace DomainModel.Concrete
         private IDbConnection CreateConnection()
         {
             //Postgres local
-            var connection = new NpgsqlConnection("Server=127.0.0.1;Port=5432;Database=ProjectTemplateDB;User Id=postgres;Password=developer;");
+            var connection = new NpgsqlConnection("Server=127.0.0.1;Port=5432;Database=ProjectTemplateDB;User Id=postgres;Password=t66ZsZbBeT0F1g3VZrh1;");
 
             return connection;
         }

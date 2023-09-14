@@ -13,8 +13,8 @@ namespace ProjectTemplate.Controllers
 {
     public class HomeController : Controller
     {
-        private IEntryRepository entryRepository = null;
-        public HomeController(IEntryRepository entryRepository)
+        private IArticleRepository entryRepository = null;
+        public HomeController(IArticleRepository entryRepository)
         {
             this.entryRepository = entryRepository;
         }
