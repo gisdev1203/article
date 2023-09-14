@@ -41,6 +41,7 @@ namespace ProjectTemplate
             });*/
 
             app.UseRouting();
+            app.UseStaticFiles();
 
             app.UseEndpoints(endpoints =>
             {

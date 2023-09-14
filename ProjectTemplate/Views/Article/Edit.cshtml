@@ -1,0 +1,29 @@
+﻿@model ProjectTemplate.PresentationModel.ArticleDTO
+
+@{
+    ViewData["Title"] = "Articles";
+    Layout = "~/Views/Shared/MasterPage.cshtml";
+}
+
+@section HeaderContent
+    {
+    <link rel="stylesheet" type="text/css" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" type="text/css" href="~/css/article.css" />
+}
+
+@section MainContent
+    {
+    <div class="mt-5 ml-5 mr-5 text-center">
+        <p>
+            Edit for  <b> @Model.ArticleObjects.FirstOrDefault().Name </b> Coming Soon!
+        </p>
+        <span class="">
+            @Html.ActionLink("Back To Home", "Articles")
+        </span>
+
+    </div>
+    }
+
+@section JSFooterContent {
+    <script src="~/js/article.js"></script>
+}

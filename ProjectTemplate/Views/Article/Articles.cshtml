@@ -1,0 +1,68 @@
+﻿@model ProjectTemplate.PresentationModel.ArticleDTO
+
+@{
+    ViewData["Title"] = "Articles";
+    Layout = "~/Views/Shared/MasterPage.cshtml";
+}
+
+@section HeaderContent
+    {
+    <link rel="stylesheet" type="text/css" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" type="text/css" href="~/css/article.css" />
+}
+
+@section MainContent
+    {    
+    <div class="mt-5 ml-5 mr-5">
+        <p>
+            <a class="btn btn-primary" id="createArticleBtn">Create New Article</a>
+        </p>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Article Name</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.ArticleObjects)
+                {
+                    <tr>
+                        <td>
+                            @item.Name
+                        </td>
+                        <td>
+                            @Html.ActionLink("Edit", "Edit", new {  id = @item.Id })
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    }
+
+@section JSFooterContent {
+    <script src="~/js/article.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#createArticleBtn").click(function () {
+                $.ajax({
+                    type: "POST",
+                    url: "/Article/CreateNewArticle",
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.articleId) {
+                            // Redirect to the edit page of the newly created article.
+                            window.location.href = "/Article/Edit/" + data.articleId;
+                        } else {
+                            alert("Failed to create a new article.");
+                        }
+                    },
+                    error: function () {
+                        alert("An error occurred while creating a new article.");
+                    }
+                });
+            });
+        });
+    </script>
+}
