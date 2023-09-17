@@ -1,11 +1,10 @@
-﻿body {
-    font-family: Arial, sans-serif;
+﻿#parentdiv {
     display: flex;
-    justify-content: space-between;
     padding: 20px;
 }
 
 .panel {
+    display: flex;
     flex: 1;
     margin: 10px;
     padding: 20px;
@@ -77,8 +76,7 @@
     left: 0;
     padding: 1.618rem;
     background: #fff;
-    color: #2c3e50;
-    opacity: 0;
+    col opacity: 0;
     transition: all 0.35s;
 }
 
@@ -96,4 +94,12 @@
     z-index: 2;
     opacity: 1;
     transition: all 0.35s;
+}
+
+#actiondiv {
+    text-align: center; 
+}
+
+#actiondiv button {
+    margin: 0 10px;
 }

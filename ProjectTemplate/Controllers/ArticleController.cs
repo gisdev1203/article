@@ -3,6 +3,7 @@ using DomainModel.ObjectList;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ProjectTemplate.PresentationModel;
+using System.Linq;
 
 namespace ProjectTemplate.Controllers
 {
@@ -30,11 +31,21 @@ namespace ProjectTemplate.Controllers
         }
 
         // GET: ArticleController/Edit/5
-        public ActionResult Edit(int id)
+        public IActionResult Edit(int id)
         {
             ArticleDTO dto = new ArticleDTO();
             dto.ArticleObjects = entryRepository.ListArticles(new ArticleFilter { Id = id });
             return View("Edit", dto);
+        }
+
+        public IActionResult SaveArticle(string content, string comments, int id)
+        {
+            ArticleDTO dto = new ArticleDTO();
+            dto.Article = entryRepository.ListArticles(new ArticleFilter { Id = id }).FirstOrDefault();
+            dto.Article.Content = content;
+
+            entryRepository.UpdateArticle(dto.Article);
+            return Json(new { success = true });
         }
 
         // POST: ArticleController/Edit/5

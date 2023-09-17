@@ -11,81 +11,98 @@
     <script src="https://cdn.tiny.cloud/1/e2lzgprjvq5zdanf693e4h6w8xjs6him6xqkyu6s69bxxir1/tinymce/6/tinymce.min.js"
             referrerpolicy="origin"></script>
     @* Alternate Trial Key: j15q36jt8uynx9hihi6nmz602oru1uqbn99pm8ds0u864rrs *@
+
+    <style>
+
+
+    </style>
 }
 
 @section MainContent
     {
 
-    <div class="panel">
-        <textarea>
-                 Let's start an Article!
+    <div id="parentdiv">
+        <div class="panel">
+            <textarea id="articleEditor">
+                @Html.Raw(Model.ArticleObjects.FirstOrDefault().Content)
             </textarea>
-    </div>
+        </div>
+        <div class="panel">
+            <!-- Tabs -->
+            <div class="wrapper">
+                <div class="tabs">
+                    <div class="tab">
+                        <input type="radio" name="css-tabs" id="tab-1" checked class="tab-switch">
+                        <label for="tab-1" class="tab-label">Fields</label>
+                        <div class="tab-content">
+                            <label>Journal: </label>
+                            <select>
+                                <option value="One">Option 1</option>
+                                <option value="Two">Option 2</option>
+                                <option value="Three">Option 3</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="tab">
+                        <input type="radio" name="css-tabs" id="tab-2" class="tab-switch">
+                        <label for="tab-2" class="tab-label">Figures</label>
+                        <div class="tab-content">
+                            Figures content goes here
+                        </div>
+                    </div>
+                    <div class="tab">
+                        <input type="radio" name="css-tabs" id="tab-3" class="tab-switch">
+                        <label for="tab-3" class="tab-label">References</label>
+                        <div class="tab-content">
+                            References content goes here
+                        </div>
+                    </div>
+                    <div class="tab">
+                        <input type="radio" name="css-tabs" id="tab-4" class="tab-switch">
+                        <label for="tab-4" class="tab-label">Metadata</label>
+                        <div class="tab-content">
+                            Metadata content goes here
+                        </div>
+                    </div>
+                    <div class="tab">
+                        <input type="radio" name="css-tabs" id="tab-5" class="tab-switch">
+                        <label for="tab-5" class="tab-label">Chat</label>
+                        <div class="tab-content">
+                            Chat content goes here
+                        </div>
+                    </div>
+                    <div class="tab">
+                        <input type="radio" name="css-tabs" id="tab-6" class="tab-switch">
+                        <label for="tab-6" class="tab-label">Historic</label>
+                        <div class="tab-content">
+                            Historic content goes here
+                        </div>
+                    </div>
 
-    <div class="panel">
-        <!-- Tabs -->
-        <div class="wrapper">
-            <div class="tabs">
-                <div class="tab">
-                    <input type="radio" name="css-tabs" id="tab-1" checked class="tab-switch">
-                    <label for="tab-1" class="tab-label">Fields</label>
-                    <div class="tab-content">
-                        <label>Journal: </label>
-                        <select>
-                            <option value="Type">Type of article</option>
-                            <option value="AuthorName">Name of the authors</option>
-                            <option value="CoAuthorName">Name of the co-authors</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="tab">
-                    <input type="radio" name="css-tabs" id="tab-2" class="tab-switch">
-                    <label for="tab-2" class="tab-label">Figures</label>
-                    <div class="tab-content">
-                        Figures content goes here
-                    </div>
-                </div>
-                <div class="tab">
-                    <input type="radio" name="css-tabs" id="tab-3" class="tab-switch">
-                    <label for="tab-3" class="tab-label">References</label>
-                    <div class="tab-content">
-                        References content goes here
-                    </div>
-                </div>
-                <div class="tab">
-                    <input type="radio" name="css-tabs" id="tab-4" class="tab-switch">
-                    <label for="tab-4" class="tab-label">Metadata</label>
-                    <div class="tab-content">
-                        Metadata content goes here
-                    </div>
-                </div>
-                <div class="tab">
-                    <input type="radio" name="css-tabs" id="tab-5" class="tab-switch">
-                    <label for="tab-5" class="tab-label">Chat</label>
-                    <div class="tab-content">
-                        Chat content goes here
-                    </div>
-                </div>
-                <div class="tab">
-                    <input type="radio" name="css-tabs" id="tab-6" class="tab-switch">
-                    <label for="tab-6" class="tab-label">Historic</label>
-                    <div class="tab-content">
-                        Historic content goes here
-                    </div>
-                </div>
-
-                @* //TODO: Need to add/adjust tab#7 later *@
-                @* <div class="tab">
-                    <input type="radio" name="css-tabs" id="tab-7" class="tab-switch">
-                    <label for="tab-7" class="tab-label">Workflow</label>
-                    <div class="tab-content">test content test content of fields test content of fields</div>
+                    @* //TODO: Need to add/adjust tab#7 later *@
+                    @* <div class="tab">
+                <input type="radio" name="css-tabs" id="tab-7" class="tab-switch">
+                <label for="tab-7" class="tab-label">Workflow</label>
+                <div class="tab-content">test content test content of fields test content of fields</div>
                 </div> *@
+                </div>
             </div>
         </div>
+    </div>
+
+    <div id="actiondiv">
+        <button id="btnDelete">Delete</button>
+        <button id="btnCancel" onclick="cancel()">Cancel</button>
+        <button id="btnSave" onclick="manualSaveArticle()">Save</button>
     </div>
 
     }
 
 @section JSFooterContent {
     <script src="~/js/article.js"></script>
+    <script>
+        $(document).ready(function () {           
+            autoSaveArticle(); // Initial call to autoSaveArticleContent
+        });
+    </script>
 }

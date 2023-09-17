@@ -23,7 +23,7 @@ namespace DomainModel.Concrete
         public List<Article> ListArticles(ArticleFilter filter)
         {
             dynamic parameters = new ExpandoObject();
-            string sql = "SELECT id, name FROM article WHERE is_deleted = false";
+            string sql = "SELECT id, name, content FROM article WHERE is_deleted = false";
 
             if (filter.Id.HasValue)
             {
@@ -35,13 +35,13 @@ namespace DomainModel.Concrete
         
         public List<Article> GetArticle(int id)
         {
-            string sql = "SELECT id, name FROM article WHERE id = @A";
+            string sql = "SELECT id, name, content FROM article WHERE id = @A";
             return Query<Article>(sql, new { A = id });
         }
 
         public Article GetDataFromArticleTableLastOrDefault()
         {
-            string sql = "SELECT id, name FROM article order by 1 desc limit 1";
+            string sql = "SELECT id, name, content FROM article order by 1 desc limit 1";
             return QueryFirstOrDefault<Article>(sql);
         }
 
@@ -49,11 +49,39 @@ namespace DomainModel.Concrete
         {
             var articleObject = GetDataFromArticleTableLastOrDefault();
             var newArticleNumber = articleObject == null ? 1 : articleObject.Id + 1;
-            var newArticleName = "Article test " + newArticleNumber;
-
+            var newArticleName = "Article test " + newArticleNumber;            
+            
             //TODO: We will change the article name later
-            string sql = "INSERT INTO article(name, is_deleted) VALUES(@A, false) RETURNING Id";
-            return ExecuteScalar(sql, new { A = newArticleName });
+            string sql = "INSERT INTO article(name, is_deleted, article_form_id) VALUES(@A, false, @B) RETURNING Id";
+            return ExecuteScalar(sql, new { A = newArticleName, B = GetArticleFormId()});
         }
+
+        public int GetArticleFormId()
+        {
+            //TODO: Article type should be dynamic rather than hard coded
+            var articleFormFilter = new ArticleFormFilter() { type = "sport" };
+            var articleForm = ListArticleForm(articleFormFilter).FirstOrDefault();
+
+            return articleForm.Id;
+        }
+
+        public List<ArticleForm> ListArticleForm(ArticleFormFilter filter)
+        {
+            dynamic parameters = new ExpandoObject();
+            string sql = "SELECT id, type, form_definition FROM article_form";
+            if (!string.IsNullOrEmpty(filter.type))
+            {
+                parameters.A = filter.type;
+                sql += " WHERE type = @A";
+            }
+            return Query<ArticleForm>(sql, parameters);
+        }
+
+        public void UpdateArticle(Article article)
+        {
+            string sql = "update article set content = @A where id = @B";
+            Execute(sql, new { A = article.Content, B = article.Id});
+        }
+
     }
 }

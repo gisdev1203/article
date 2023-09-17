@@ -1,6 +1,6 @@
 ﻿namespace DomainModel.ObjectList
 {
-    public class ArticleFormObject
+    public class ArticleForm
     {
         public int Id { get; set; }
         public string Type { get; set; }
