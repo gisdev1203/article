@@ -24,14 +24,14 @@ namespace ProjectTemplate.Controllers
         }
 
         [HttpPost]
-        public JsonResult CreateNewArticle()
+        public JsonResult CreateNewArticle(int article_type)
         {
-            int newArticleId = entryRepository.CreateNewArticle();
+            int newArticleId = entryRepository.CreateNewArticle(article_type);
             return Json(new { articleId = newArticleId });
         }
 
         // GET: ArticleController/Edit/5
-        public IActionResult Edit(int id)
+        public IActionResult EditArticle(int id)
         {
             ArticleDTO dto = new ArticleDTO();
             dto.ArticleObjects = entryRepository.ListArticles(new ArticleFilter { Id = id });

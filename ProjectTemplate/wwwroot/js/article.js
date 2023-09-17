@@ -1,4 +1,28 @@
 ﻿
+$(document).ready(function () {
+    $("#createArticleBtn").click(function () {
+        $.ajax({
+            type: "POST",
+            url: "/article/create_new_article",
+            data: {
+                article_type: 1, //hard coded for now
+            },
+            dataType: "json",
+            success: function (data) {
+                if (data.articleId) {
+                    // Redirect to the edit page of the newly created article.
+                    window.location.href = "/article/edit/" + data.articleId;
+                } else {
+                    alert("Failed to create a new article.");
+                }
+            },
+            error: function () {
+                alert("An error occurred while creating a new article.");
+            }
+        });
+    });
+});
+
 tinymce.init({
     selector: 'textarea',
     plugins: 'tinycomments',
@@ -61,5 +85,5 @@ function manualSaveArticle() {
 }
 
 function cancel() {
-    window.location.href = "/Article/Articles/";
+    window.location.href = "/article/articles/";
 }

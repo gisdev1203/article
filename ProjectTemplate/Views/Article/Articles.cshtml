@@ -31,7 +31,7 @@
                             @item.Name
                         </td>
                         <td>
-                            <a href="/Article/Edit/@(item.Id)">Edit</a>
+                            <a href="/article/edit/@(item.Id)">Edit</a>
                         </td>
                     </tr>
                 }
@@ -42,26 +42,4 @@
 
 @section JSFooterContent {
     <script src="~/js/article.js"></script>
-    <script>
-        $(document).ready(function () {
-            $("#createArticleBtn").click(function () {
-                $.ajax({
-                    type: "POST",
-                    url: "/Article/CreateNewArticle",
-                    dataType: "json",
-                    success: function (data) {
-                        if (data.articleId) {
-                            // Redirect to the edit page of the newly created article.
-                            window.location.href = "/Article/Edit/" + data.articleId;
-                        } else {
-                            alert("Failed to create a new article.");
-                        }
-                    },
-                    error: function () {
-                        alert("An error occurred while creating a new article.");
-                    }
-                });
-            });
-        });
-    </script>
 }

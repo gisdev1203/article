@@ -47,6 +47,13 @@ namespace ProjectTemplate
             {
                 endpoints.MapControllerRoute(name: "test_page", pattern: "page_test", new { controller = "Home", action = "PageTest", page_name = "test_page" });
 
+                //Main pages route. (To be transalted)
+                endpoints.MapControllerRoute(name: "article_page", pattern: "article/edit/{id}", new { controller = "Article", action = "EditArticle", page_name = "article_page" });
+                endpoints.MapControllerRoute(name: "all_articles", pattern: "article/articles", new { controller = "Article", action = "Articles", page_name = "all_articles" });
+
+                //Ajax routes
+                endpoints.MapControllerRoute(name: "article_page_creation", pattern: "article/create_new_article", new { controller = "Article", action = "CreateNewArticle", page_name = "article_page_creation" });
+
                 endpoints.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
             });
         }

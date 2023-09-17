@@ -45,7 +45,7 @@ namespace DomainModel.Concrete
             return QueryFirstOrDefault<Article>(sql);
         }
 
-        public int CreateNewArticle()
+        public int CreateNewArticle(int article_type)
         {
             var articleObject = GetDataFromArticleTableLastOrDefault();
             var newArticleNumber = articleObject == null ? 1 : articleObject.Id + 1;
@@ -53,16 +53,7 @@ namespace DomainModel.Concrete
             
             //TODO: We will change the article name later
             string sql = "INSERT INTO article(name, is_deleted, article_form_id) VALUES(@A, false, @B) RETURNING Id";
-            return ExecuteScalar(sql, new { A = newArticleName, B = GetArticleFormId()});
-        }
-
-        public int GetArticleFormId()
-        {
-            //TODO: Article type should be dynamic rather than hard coded
-            var articleFormFilter = new ArticleFormFilter() { type = "sport" };
-            var articleForm = ListArticleForm(articleFormFilter).FirstOrDefault();
-
-            return articleForm.Id;
+            return ExecuteScalar(sql, new { A = newArticleName, B = article_type });
         }
 
         public List<ArticleForm> ListArticleForm(ArticleFormFilter filter)
