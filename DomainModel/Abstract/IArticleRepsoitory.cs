@@ -13,6 +13,11 @@ namespace DomainModel.Abstract
         Article GetDataFromArticleTableLastOrDefault();
         int CreateNewArticle(int article_type);
         List<ArticleForm> ListArticleForm(ArticleFormFilter filter);
+        ArticleForm GetArticleFormById(ArticleFormFilter filter);
         void UpdateArticle(Article article);
+        void UpdateArticleForm(ArticleForm articleForm);
+        ArticleTemp GetArticleTemp(int id);
+        void UpdateArticleTemp(ArticleTemp articleTemp);
+        void CreateNewArticleTemp(int articleId);
     }
 }

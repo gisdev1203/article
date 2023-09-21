@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ProjectTemplate.PresentationModel;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 
 namespace ProjectTemplate.Controllers
 {
@@ -17,7 +18,7 @@ namespace ProjectTemplate.Controllers
 
         // GET: ArticleController
         public IActionResult Articles()
-        {            
+        {
             ArticleDTO dto = new ArticleDTO();
             dto.ArticleObjects = entryRepository.ListArticles(new ArticleFilter { });
             return View("Articles", dto);
@@ -27,6 +28,7 @@ namespace ProjectTemplate.Controllers
         public JsonResult CreateNewArticle(int article_type)
         {
             int newArticleId = entryRepository.CreateNewArticle(article_type);
+            entryRepository.CreateNewArticleTemp(newArticleId);
             return Json(new { articleId = newArticleId });
         }
 
@@ -37,6 +39,16 @@ namespace ProjectTemplate.Controllers
             dto.ArticleObjects = entryRepository.ListArticles(new ArticleFilter { Id = id });
             return View("Edit", dto);
         }
+                
+        public IActionResult AutoSaveArticle(string content, string comments, int id)
+        {
+            ArticleDTO dto = new ArticleDTO();
+            dto.ArticleTemp = entryRepository.GetArticleTemp(id);
+            dto.ArticleTemp.Content = content;
+
+            entryRepository.UpdateArticleTemp(dto.ArticleTemp);
+            return Json(new { success = true });
+        }
 
         public IActionResult SaveArticle(string content, string comments, int id)
         {
@@ -45,6 +57,30 @@ namespace ProjectTemplate.Controllers
             dto.Article.Content = content;
 
             entryRepository.UpdateArticle(dto.Article);
+            return Json(new { success = true });
+        }
+
+        public IActionResult GetArticleForm(string type)
+        {
+            ArticleFormDTO dto = new ArticleFormDTO();
+            dto.ArticleForm = entryRepository.ListArticleForm(new ArticleFormFilter { type = type }).FirstOrDefault();
+
+            return Json(new
+            {
+                articleFormId = dto.ArticleForm.Id,
+                articleFormType = dto.ArticleForm.Type,
+                articleFormDefinition = dto.ArticleForm.Form_Definition,
+                articleFormData = dto.ArticleForm.Form_Data
+            });
+        }
+
+        public IActionResult SaveArticleForm(int articleFormId, string formData)
+        {
+            ArticleFormDTO dto = new ArticleFormDTO();
+            dto.ArticleForm = entryRepository.GetArticleFormById(new ArticleFormFilter { Id = articleFormId });
+            dto.ArticleForm.Form_Data = formData;
+
+            entryRepository.UpdateArticleForm(dto.ArticleForm);
             return Json(new { success = true });
         }
 
@@ -61,6 +97,6 @@ namespace ProjectTemplate.Controllers
             {
                 return View();
             }
-        }        
+        }
     }
 }

@@ -9,6 +9,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml.Linq;
+using Npgsql;
+using NpgsqlTypes;
 
 namespace DomainModel.Concrete
 {
@@ -59,7 +61,7 @@ namespace DomainModel.Concrete
         public List<ArticleForm> ListArticleForm(ArticleFormFilter filter)
         {
             dynamic parameters = new ExpandoObject();
-            string sql = "SELECT id, type, form_definition FROM article_form";
+            string sql = "SELECT id, type, form_definition, form_data FROM article_form";
             if (!string.IsNullOrEmpty(filter.type))
             {
                 parameters.A = filter.type;
@@ -68,11 +70,46 @@ namespace DomainModel.Concrete
             return Query<ArticleForm>(sql, parameters);
         }
 
+        public ArticleForm GetArticleFormById(ArticleFormFilter filter)
+        {
+            dynamic parameters = new ExpandoObject();
+            string sql = "SELECT id, type, form_definition FROM article_form";
+            if (!string.IsNullOrEmpty(filter.type))
+            {
+                parameters.A = filter.type;
+                sql += " WHERE id = @A";
+            }
+            return QueryFirstOrDefault<ArticleForm>(sql, parameters);
+        }
+
         public void UpdateArticle(Article article)
         {
             string sql = "update article set content = @A where id = @B";
             Execute(sql, new { A = article.Content, B = article.Id});
         }
 
+        public void UpdateArticleForm(ArticleForm articleForm)
+        {
+            string sql = "update article_form set form_data = @A::json where id = @B";
+            Execute(sql, new { A = articleForm.Form_Data, B = articleForm.Id });
+        }
+
+        public void CreateNewArticleTemp(int articleId)
+        {
+            string sql = "INSERT INTO article_temp(article_id, content) VALUES(@A, @B)";
+            Execute(sql, new { A = articleId, B = "" });
+        }
+
+        public ArticleTemp GetArticleTemp(int id)
+        {
+            string sql = "SELECT article_id, content FROM article_temp WHERE article_id = @A";
+            return QueryFirstOrDefault<ArticleTemp>(sql, new { A = id });
+        }
+
+        public void UpdateArticleTemp(ArticleTemp articleTemp)
+        {
+            string sql = "update article_temp set content = @A where article_id = @B";
+            Execute(sql, new { A = articleTemp.Content, B = articleTemp.Article_Id });
+        }
     }
 }

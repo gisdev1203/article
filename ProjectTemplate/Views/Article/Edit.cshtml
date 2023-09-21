@@ -8,14 +8,12 @@
 @section HeaderContent
     {
     <link rel="stylesheet" type="text/css" href="~/css/article.css" />
+    <link rel="stylesheet" href="https://cdn.form.io/formiojs/formio.form.min.css" crossorigin="anonymous">
     <script src="https://cdn.tiny.cloud/1/e2lzgprjvq5zdanf693e4h6w8xjs6him6xqkyu6s69bxxir1/tinymce/6/tinymce.min.js"
             referrerpolicy="origin"></script>
+    <script src="https://cdn.form.io/formiojs/formio.form.min.js" crossorigin="anonymous"></script>
+
     @* Alternate Trial Key: j15q36jt8uynx9hihi6nmz602oru1uqbn99pm8ds0u864rrs *@
-
-    <style>
-
-
-    </style>
 }
 
 @section MainContent
@@ -25,7 +23,7 @@
         <div class="panel">
             <textarea id="articleEditor">
                 @Html.Raw(Model.ArticleObjects.FirstOrDefault().Content)
-            </textarea>
+                            </textarea>
         </div>
         <div class="panel">
             <!-- Tabs -->
@@ -35,12 +33,7 @@
                         <input type="radio" name="css-tabs" id="tab-1" checked class="tab-switch">
                         <label for="tab-1" class="tab-label">Fields</label>
                         <div class="tab-content">
-                            <label>Journal: </label>
-                            <select>
-                                <option value="One">Option 1</option>
-                                <option value="Two">Option 2</option>
-                                <option value="Three">Option 3</option>
-                            </select>
+                            <div id="formio"></div>
                         </div>
                     </div>
                     <div class="tab">
@@ -90,10 +83,11 @@
         </div>
     </div>
 
+
     <div id="actiondiv">
         <button id="btnDelete">Delete</button>
         <button id="btnCancel" onclick="cancel()">Cancel</button>
-        <button id="btnSave" onclick="manualSaveArticle()">Save</button>
+        <button type="button" id="submitButton">Save</button>
     </div>
 
     }
@@ -101,8 +95,9 @@
 @section JSFooterContent {
     <script src="~/js/article.js"></script>
     <script>
-        $(document).ready(function () {           
-            autoSaveArticle(); // Initial call to autoSaveArticleContent
+        $(document).ready(function () {
+            autoSaveArticleInterval(); // Initial call to autoSaveArticleCycle
+            getArticleFormDefinition();
         });
     </script>
 }

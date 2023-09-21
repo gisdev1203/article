@@ -1,1 +1,32 @@
-﻿
+﻿--The script adds a foreign key constraint named article_form_id to the article table. This constraint allows us to associate each new article with 
+--its corresponding type, such as 'Sports,' and its form definition.
+
+ALTER TABLE article
+ADD COLUMN article_form_id integer REFERENCES article_form (id);
+
+
+--The script adds a column 'content' in article table to persist article content from the UI
+
+ALTER TABLE IF EXISTS public.article
+    ADD COLUMN content character varying(1048576) COLLATE pg_catalog."default";
+
+-- The script adds a form_data in the table article_form to persist formio form data from the UI
+
+ALTER TABLE IF EXISTS public.article_form
+    ADD COLUMN form_data json;
+
+--The script creates a table along with column to hold the article content temporarily
+-- Table: public.article_temp
+
+-- DROP TABLE IF EXISTS public.article_temp;
+
+CREATE TABLE IF NOT EXISTS public.article_temp
+(
+    article_id integer,
+    content character varying COLLATE pg_catalog."default"
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.article_temp
+    OWNER to postgres;
