@@ -30,3 +30,11 @@ TABLESPACE pg_default;
 
 ALTER TABLE IF EXISTS public.article_temp
     OWNER to postgres;
+
+--Introducing a new column called 'form_data' to store the formio json data originating from the article user interface (UI)
+ALTER TABLE IF EXISTS public.article
+    ADD COLUMN form_data json;
+
+--Since we have added the form_data(json) column in article already, so dropping form_data from the table article_form
+ALTER TABLE IF EXISTS public.article_form
+    DROP COLUMN form_data;

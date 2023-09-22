@@ -60,7 +60,7 @@ namespace ProjectTemplate.Controllers
             return Json(new { success = true });
         }
 
-        public IActionResult GetArticleForm(string type)
+        public IActionResult GetArticleFormDefinition(string type)
         {
             ArticleFormDTO dto = new ArticleFormDTO();
             dto.ArticleForm = entryRepository.ListArticleForm(new ArticleFormFilter { type = type }).FirstOrDefault();
@@ -70,17 +70,16 @@ namespace ProjectTemplate.Controllers
                 articleFormId = dto.ArticleForm.Id,
                 articleFormType = dto.ArticleForm.Type,
                 articleFormDefinition = dto.ArticleForm.Form_Definition,
-                articleFormData = dto.ArticleForm.Form_Data
             });
         }
 
-        public IActionResult SaveArticleForm(int articleFormId, string formData)
+        public IActionResult SaveArticleForm(int articleId, string formData)
         {
-            ArticleFormDTO dto = new ArticleFormDTO();
-            dto.ArticleForm = entryRepository.GetArticleFormById(new ArticleFormFilter { Id = articleFormId });
-            dto.ArticleForm.Form_Data = formData;
+            ArticleDTO dto = new ArticleDTO();
+            dto.Article = entryRepository.ListArticles(new ArticleFilter { Id = articleId }).FirstOrDefault();
+            dto.Article.Form_Data = formData;
 
-            entryRepository.UpdateArticleForm(dto.ArticleForm);
+            entryRepository.UpdateArticleForm(dto.Article);
             return Json(new { success = true });
         }
 

@@ -53,7 +53,7 @@ namespace ProjectTemplate
 
                 //Ajax routes
                 endpoints.MapControllerRoute(name: "article_page_creation", pattern: "article/create_new_article", new { controller = "Article", action = "CreateNewArticle", page_name = "article_page_creation" });
-                endpoints.MapControllerRoute(name: "article_form-definition", pattern: "article/get_article_form", new { controller = "Article", action = "GetArticleForm", page_name = "article_form-definition" });
+                endpoints.MapControllerRoute(name: "article_form_definition", pattern: "article/get_article_form_definition", new { controller = "Article", action = "GetArticleFormDefinition", page_name = "article_form_definition" });
                 endpoints.MapControllerRoute(name: "article_form_save_data", pattern: "article/save_form_data", new { controller = "Article", action = "SaveArticleForm", page_name = "article_form_save_data" });
 
                 endpoints.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");

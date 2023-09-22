@@ -1,8 +1,14 @@
-﻿@model ProjectTemplate.PresentationModel.ArticleDTO
+﻿@using Newtonsoft.Json;
+@model ProjectTemplate.PresentationModel.ArticleDTO
 
 @{
     ViewData["Title"] = "Articles";
     Layout = "~/Views/Shared/MasterPage.cshtml";
+}
+
+@{
+    var formData = @Html.Raw(JsonConvert.SerializeObject(Model.ArticleObjects.FirstOrDefault().Form_Data));
+    var articleId = @Model.ArticleObjects.FirstOrDefault().Id;
 }
 
 @section HeaderContent
@@ -96,8 +102,8 @@
     <script src="~/js/article.js"></script>
     <script>
         $(document).ready(function () {
-            autoSaveArticleInterval(); // Initial call to autoSaveArticleCycle
-            getArticleFormDefinition();
+            autoSaveArticleInterval(); // Initial call to autoSaveArticleCycle    
+            getArticleForm(@formData, @articleId);
         });
     </script>
 }

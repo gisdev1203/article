@@ -6,6 +6,5 @@
         public string Type { get; set; }
         //TODO: We will deserialize to a DTO later (form_definition json NOT NULL)
         public string Form_Definition { get; set; }
-        public string Form_Data { get; set; }
     }
 }

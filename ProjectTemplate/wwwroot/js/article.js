@@ -116,12 +116,13 @@ function cancel() {
     window.location.href = "/article/articles/";
 }
 
-function getArticleFormDefinition(){
+function getArticleForm(formData, articleId) {
     let form;
+    var existingFormData = formData;
 
     $.ajax({
         type: "POST",
-        url: "/article/get_article_form",
+        url: "/article/get_article_form_definition",
         data: {
             type: 'sport' // hard coded for now
         },
@@ -132,11 +133,10 @@ function getArticleFormDefinition(){
 
                     .then(function (createdForm) {
                         form = createdForm;
-
-                        var savedFormData = data.articleFormData; //'{"authorName":"Imran Ullah","coAuthorName":"NI","testDropdow":"value1","toBeRevised":true,"numberOfParticipants":15}';
-                        if (savedFormData) {
+                        
+                        if (existingFormData) {
                             form.submission = {
-                                data: JSON.parse(savedFormData)
+                                data: JSON.parse(existingFormData)
                             };
                         }
 
@@ -147,7 +147,7 @@ function getArticleFormDefinition(){
                                 url: '/article/save_form_data',
                                 data: {
                                     formData: formDataString,
-                                    articleFormId: data.articleFormId
+                                    articleId: articleId
                                 },
                                 dataType: 'json',
                                 success: function (response) {

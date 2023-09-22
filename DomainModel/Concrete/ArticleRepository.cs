@@ -25,7 +25,7 @@ namespace DomainModel.Concrete
         public List<Article> ListArticles(ArticleFilter filter)
         {
             dynamic parameters = new ExpandoObject();
-            string sql = "SELECT id, name, content FROM article WHERE is_deleted = false";
+            string sql = "SELECT id, name, content, form_data FROM article WHERE is_deleted = false";
 
             if (filter.Id.HasValue)
             {
@@ -61,7 +61,7 @@ namespace DomainModel.Concrete
         public List<ArticleForm> ListArticleForm(ArticleFormFilter filter)
         {
             dynamic parameters = new ExpandoObject();
-            string sql = "SELECT id, type, form_definition, form_data FROM article_form";
+            string sql = "SELECT id, type, form_definition FROM article_form";
             if (!string.IsNullOrEmpty(filter.type))
             {
                 parameters.A = filter.type;
@@ -87,11 +87,11 @@ namespace DomainModel.Concrete
             string sql = "update article set content = @A where id = @B";
             Execute(sql, new { A = article.Content, B = article.Id});
         }
-
-        public void UpdateArticleForm(ArticleForm articleForm)
+        
+        public void UpdateArticleForm(Article article)
         {
-            string sql = "update article_form set form_data = @A::json where id = @B";
-            Execute(sql, new { A = articleForm.Form_Data, B = articleForm.Id });
+            string sql = "update article set form_data = @A::json where id = @B";
+            Execute(sql, new { A = article.Form_Data, B = article.Id});
         }
 
         public void CreateNewArticleTemp(int articleId)

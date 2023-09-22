@@ -15,7 +15,7 @@ namespace DomainModel.Abstract
         List<ArticleForm> ListArticleForm(ArticleFormFilter filter);
         ArticleForm GetArticleFormById(ArticleFormFilter filter);
         void UpdateArticle(Article article);
-        void UpdateArticleForm(ArticleForm articleForm);
+        void UpdateArticleForm(Article article);
         ArticleTemp GetArticleTemp(int id);
         void UpdateArticleTemp(ArticleTemp articleTemp);
         void CreateNewArticleTemp(int articleId);
