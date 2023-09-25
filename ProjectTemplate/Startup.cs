@@ -20,6 +20,11 @@ namespace ProjectTemplate
         {
             IMvcBuilder builder = services.AddRazorPages();
             services.AddScoped<IArticleRepository, ArticleRepository>();
+            //services.AddControllers()
+            //    .AddJsonOptions(options =>
+            //    {
+            //        options.JsonSerializerOptions.PropertyNamingPolicy = null; 
+            //    });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -32,13 +37,13 @@ namespace ProjectTemplate
 
             app.UseRouting();
 
-           /* app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapGet("/", async context =>
-                {
-                    await context.Response.WriteAsync("Hello World!");
-                });
-            });*/
+            /* app.UseEndpoints(endpoints =>
+             {
+                 endpoints.MapGet("/", async context =>
+                 {
+                     await context.Response.WriteAsync("Hello World!");
+                 });
+             });*/
 
             app.UseRouting();
             app.UseStaticFiles();
@@ -55,6 +60,8 @@ namespace ProjectTemplate
                 endpoints.MapControllerRoute(name: "article_page_creation", pattern: "article/create_new_article", new { controller = "Article", action = "CreateNewArticle", page_name = "article_page_creation" });
                 endpoints.MapControllerRoute(name: "article_form_definition", pattern: "article/get_article_form_definition", new { controller = "Article", action = "GetArticleFormDefinition", page_name = "article_form_definition" });
                 endpoints.MapControllerRoute(name: "article_form_save_data", pattern: "article/save_form_data", new { controller = "Article", action = "SaveArticleForm", page_name = "article_form_save_data" });
+                endpoints.MapControllerRoute(name: "article_create_comments", pattern: "article/create_article_comments", new { controller = "Article", action = "CreateArticleComments", page_name = "article_create_comments" });
+                endpoints.MapControllerRoute(name: "article_edit_comments", pattern: "article/edit_article_comments", new { controller = "Article", action = "EditArticleComments", page_name = "article_edit_comments" });
 
                 endpoints.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
             });

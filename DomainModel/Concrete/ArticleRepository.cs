@@ -11,6 +11,7 @@ using System.Text;
 using System.Xml.Linq;
 using Npgsql;
 using NpgsqlTypes;
+using static System.Net.WebRequestMethods;
 
 namespace DomainModel.Concrete
 {
@@ -34,7 +35,7 @@ namespace DomainModel.Concrete
             }
             return Query<Article>(sql, parameters);
         }
-        
+
         public List<Article> GetArticle(int id)
         {
             string sql = "SELECT id, name, content FROM article WHERE id = @A";
@@ -51,8 +52,8 @@ namespace DomainModel.Concrete
         {
             var articleObject = GetDataFromArticleTableLastOrDefault();
             var newArticleNumber = articleObject == null ? 1 : articleObject.Id + 1;
-            var newArticleName = "Article test " + newArticleNumber;            
-            
+            var newArticleName = "Article test " + newArticleNumber;
+
             //TODO: We will change the article name later
             string sql = "INSERT INTO article(name, is_deleted, article_form_id) VALUES(@A, false, @B) RETURNING Id";
             return ExecuteScalar(sql, new { A = newArticleName, B = article_type });
@@ -85,13 +86,13 @@ namespace DomainModel.Concrete
         public void UpdateArticle(Article article)
         {
             string sql = "update article set content = @A where id = @B";
-            Execute(sql, new { A = article.Content, B = article.Id});
+            Execute(sql, new { A = article.Content, B = article.Id });
         }
-        
+
         public void UpdateArticleForm(Article article)
         {
             string sql = "update article set form_data = @A::json where id = @B";
-            Execute(sql, new { A = article.Form_Data, B = article.Id});
+            Execute(sql, new { A = article.Form_Data, B = article.Id });
         }
 
         public void CreateNewArticleTemp(int articleId)
@@ -110,6 +111,39 @@ namespace DomainModel.Concrete
         {
             string sql = "update article_temp set content = @A where article_id = @B";
             Execute(sql, new { A = articleTemp.Content, B = articleTemp.Article_Id });
+        }
+
+        public int CreateArticleComments(ArticleComments articleComments)
+        {
+            string sql = "INSERT INTO article_comments(article_id, comments, created_at) VALUES(@A, @B, @C) RETURNING Id";
+            return Execute(sql, new { A = articleComments.Article_Id, B = articleComments.Comments, C = articleComments.Created_At });
+        }
+
+        public List<ArticleComments> ListArticleComments(ArticleCommentsFilter filter)
+        {
+            dynamic parameters = new ExpandoObject();
+            string sql = "SELECT id, article_id, comments, created_at FROM article_comments";
+            if (filter.Id != null)
+            {
+                parameters.A = filter.Id;
+                sql += " WHERE article_Id = @A";
+            }
+            return Query<ArticleComments>(sql, parameters);
+        }
+
+        public int EditArticleComments(ArticleComments articleComments)
+        {
+            dynamic parameters = new ExpandoObject();
+            string sql = "update article_comments set comments = ";
+            if(articleComments.Article_Id > 0)
+            {
+                parameters.A = articleComments.Comments;
+                parameters.B = articleComments.Article_Id;
+                parameters.C = articleComments.Id;
+                sql += "@A WHERE article_Id = @B and Id = @C";
+            }
+
+            return Execute(sql, parameters);
         }
     }
 }

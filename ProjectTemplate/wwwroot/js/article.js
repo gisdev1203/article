@@ -23,19 +23,148 @@ $(document).ready(function () {
     });
 });
 
-tinymce.init({
-    selector: 'textarea',
-    plugins: 'tinycomments',
-    toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | align lineheight | tinycomments | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
-    tinycomments_mode: 'embedded',
-    tinycomments_author: 'Author name',
-    mergetags_list: [
-        { value: 'First.Name', title: 'First Name' },
-        { value: 'Email', title: 'Email' },
-    ],
-    ai_request: (request, respondWith) => respondWith.string(() => Promise.reject("See docs to implement AI Assistant"))
-});
+function tinycomments_create(req, done, fail) {
+    var comments = req.content;
+    var createdAt = req.createdAt;
+    var articleId = $("#articleId").val();
 
+    fetch('/article/create_article_comments', {
+        method: 'POST',
+        body: JSON.stringify({ Article_Id: parseInt(articleId, 10), Comments: comments, Created_At: createdAt }),
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        },
+    })
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error('Failed to create comment');
+            }
+            return response.json();
+        })
+        .then((req2) => {
+            let conversationUid = 1;// req2.conversationUid; //TODO: hard coded for now
+            done({ conversationUid: conversationUid });
+        })
+        .catch((e) => {
+            fail(e);
+        });
+}
+
+function tinycomments_edit_comment(req, done, fail) {
+    let conversationUid = req.conversationUid;
+    let commentUid = req.commentUid;
+    let content = req.content;
+    let modifiedAt = req.modifiedAt;
+    var articleId = $("#articleId").val();
+
+    fetch(
+        '/article/edit_article_comments',
+        {
+            method: 'POST',
+            body: JSON.stringify({ Article_Id: parseInt(articleId, 10), Comments: content, Created_At: modifiedAt }),
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+        }
+    )
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error('Failed to edit comment');
+            }
+            return response.json();
+        })
+        .then((req2) => {
+            let canEdit = req2.canEdit;
+            done({ canEdit: canEdit });
+        })
+        .catch((e) => {
+            fail(e);
+        });
+}
+
+function tinycomments_lookup({ conversationUid }, done, fail) {
+    let lookup = async function () {
+        var articleId = $("#articleId").val();
+        let convResp = await fetch(
+            '/Article/GetArticleComments', {
+                method: 'POST',
+                body: JSON.stringify({ Article_Id: parseInt(articleId, 10) }),
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+        }// + conversationUid
+        );
+        if (!convResp.ok) {
+            throw new Error('Failed to get conversation');
+        }
+        let comments = await convResp.json();
+        //let usersResp = await fetch('/Article/GetArticleUsers');
+        //if (!usersResp.ok) {
+        //    throw new Error('Failed to get users');
+        //}
+        //let { users } = await usersResp.json();
+        //let getUser = function (userId) {
+        //    return users.find((u) => {
+        //        return u.id === userId;
+        //    });
+        //};
+        return {
+            conversation: {
+                uid: 1, //conversationUid, //TODO: hard coded for now
+                comments: comments.map((comment) => {
+                    return {
+                        ...comment,
+                        content: comment.comments,
+                        authorName: 'test_author' //getUser(comment.author)?.displayName, //TODO: need discussion on the author management, hard coded for now
+                    };
+                }),
+            },
+        };
+    };
+    lookup()
+        .then((data) => {
+            console.log('Lookup success ' + conversationUid, data);
+            done(data);
+        })
+        .catch((err) => {
+            console.error('Lookup failure ' + conversationUid, err);
+            fail(err);
+        });
+}
+
+tinymce.init({
+    selector: 'textarea#articleEditor',
+    height: 800,
+    plugins: 'code tinycomments help lists',
+    toolbar:
+        'undo redo | formatselect | ' +
+        'bold italic backcolor | alignleft aligncenter ' +
+        'alignright alignjustify | bullist numlist outdent indent | ' +
+        'removeformat | addcomment showcomments | help',
+    menubar: 'file edit view insert format tc',
+    menu: {
+        tc: {
+            title: 'Comments',
+            items: 'addcomment showcomments deleteallconversations',
+        },
+    },
+    tinycomments_create,
+    tinycomments_reply,
+    tinycomments_edit_comment,
+    tinycomments_delete,
+    tinycomments_delete_all,
+    tinycomments_delete_comment,
+    tinycomments_lookup,
+    tinycomments_author: 'test_author', //TODO: need discussion on the author management, hard coded for now
+    setup: function (editor) {
+        editor.on('SkinLoaded', () => {
+            editor.execCommand('ToggleSidebar', false, 'showcomments');
+        });
+    },
+});
 
 function saveArticle() {
     var editorContent = tinymce.get('articleEditor').getContent();
@@ -97,7 +226,6 @@ function autoSaveArticle() {
 
 function autoSaveArticleInterval() {
     autoSaveArticle();
-    console.log("Content saved.");
     setTimeout(autoSaveArticleInterval, 2 * 60 * 1000);
 }
 
@@ -133,7 +261,7 @@ function getArticleForm(formData, articleId) {
 
                     .then(function (createdForm) {
                         form = createdForm;
-                        
+
                         if (existingFormData) {
                             form.submission = {
                                 data: JSON.parse(existingFormData)

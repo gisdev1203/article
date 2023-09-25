@@ -25,6 +25,7 @@
 @section MainContent
     {
 
+    <input type="hidden" id="articleId" value="@Model.ArticleObjects.FirstOrDefault().Id" />
     <div id="parentdiv">
         <div class="panel">
             <textarea id="articleEditor">
@@ -107,3 +108,154 @@
         });
     </script>
 }
+
+@* 
+<script type="text/javascript">
+    var store = {
+        'annotation-607dlp1ek27': {
+            comments: [
+                { uid: 'annotation-607dlp1ek27', author: 'person_1', authorName: 'Person 1', content: 'Comment 1' },
+                { uid: 'annotation-8dfal0zcrkw', author: 'person_1', authorName: 'Person 1', content: 'Comment 2' },
+                { uid: 'annotation-8dfal0zcrka', author: 'person_2', authorName: 'Person 2', content: 'Comment 3' },
+                { uid: 'annotation-8dfal0zcrkc', author: 'person_2', authorName: 'Person 2', content: 'Comment 4' },
+            ],
+            uid: 'annotation-607dlp1ek27'
+        }
+    };
+
+
+
+    var author = 'Demo';
+    var authorName = 'Demo User';
+
+
+
+    var create = function (req, done, fail) {
+        if (req.content === 'fail') {
+            fail(new Error('Something has gone wrong...'));
+        } else {
+            var uid = 'annotation-' + randomString();
+            store[uid] = {
+                uid,
+                comments: [{
+                    uid: uid,
+                    author: author,
+                    authorName: authorName,
+                    content: req.content
+                }]
+            };
+            done({
+                conversationUid: uid
+            });
+        }
+    };
+
+
+
+    var reply = function (req, done, fail) {
+        var replyUid = 'annotation-' + randomString();
+        var current = store[req.conversationUid];
+        current.comments = current.comments.concat([
+            {
+                uid: replyUid,
+                author: author,
+                authorName: authorName,
+                content: req.content
+            }
+        ]);
+        done({
+            commentUid: replyUid
+        });
+    };
+
+
+
+    var del = function (req, done, fail) {
+        delete store[req.conversationUid];
+        done({
+            canDelete: true
+        });
+    };
+
+
+
+    var delComment = function (req, done, fail) {
+        var current = store[req.conversationUid];
+        // Should be supported on browsers ...
+        current.comments = current.comments.filter(function (f) {
+            return f.uid !== req.commentUid;
+        });
+        done({
+            canDelete: true
+        });
+    };
+
+
+
+    var editComment = function (req, done, fail) {
+        var current = store[req.conversationUid];
+        // Should be supported on browsers ...
+        current.comments = current.comments.map(function (f) {
+            return f.uid === req.commentUid ? {
+                uid: f.uid,
+                author: f.author,
+                content: req.content
+            } : f;
+        });
+        done({
+            canEdit: true
+        });
+    };
+
+
+
+    var deleteAll = function (req, done, fail) {
+        Object.keys(store).forEach(function (k) {
+            delete store[k];
+        });
+        done({
+            canDelete: true
+        });
+    };
+
+
+
+    var lookup = function (req, done, fail) {
+        var filterComments = store[req.conversationUid].comments.filter((c) => {
+            return c.author === 'person_2';
+        });
+        done({
+            uid: req.conversationUid,
+            conversation: {
+                uid: store[req.conversationUid].uid,
+                comments: filterComments
+            }
+        });
+    };
+
+
+
+    tinymce.init({
+        selector: 'textarea',
+        height: 400,
+        toolbar: 'showcomments addcomment',
+        plugins: 'tinycomments code',
+        tinycomments_create: create,
+        tinycomments_reply: reply,
+        tinycomments_delete: del,
+        tinycomments_delete_all: deleteAll,
+        tinycomments_lookup: lookup,
+        tinycomments_delete_comment: delComment,
+        tinycomments_edit_comment: editComment
+    });
+</script>
+
+
+
+<form method="post" action="dump.php">
+<textarea name="content">
+<p>
+    <span class="mce-annotation tox-comment" data-mce-annotation-uid="annotation-607dlp1ek27" data-mce-annotation="tinycomments">Pellentesque habitant morbi tristique</span> senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. Aenean ultricies mi vitae est. Mauris placerat eleifend leo. Quisque sit amet est et sapien ullamcorper pharetra. Vestibulum erat wisi, condimentum sed, commodo vitae, ornare sit amet, wisi. Aenean fermentum, elit eget tincidunt condimentum, eros ipsum rutrum orci, sagittis tempus lacus enim ac dui. Donec non enim in turpis pulvinar facilisis. Ut felis. Praesent dapibus, neque id cursus faucibus, tortor neque egestas augue, eu vulputate magna eros eu erat. Aliquam erat volutpat. Nam dui mi, tincidunt quis, accumsan porttitor, facilisis luctus, metus
+</p>
+</textarea>
+</form> *@

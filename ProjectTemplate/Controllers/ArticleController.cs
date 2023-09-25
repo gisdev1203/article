@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using ProjectTemplate.PresentationModel;
 using System.Linq;
 using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
 
 namespace ProjectTemplate.Controllers
 {
@@ -39,7 +41,7 @@ namespace ProjectTemplate.Controllers
             dto.ArticleObjects = entryRepository.ListArticles(new ArticleFilter { Id = id });
             return View("Edit", dto);
         }
-                
+
         public IActionResult AutoSaveArticle(string content, string comments, int id)
         {
             ArticleDTO dto = new ArticleDTO();
@@ -57,6 +59,54 @@ namespace ProjectTemplate.Controllers
             dto.Article.Content = content;
 
             entryRepository.UpdateArticle(dto.Article);
+            return Json(new { success = true });
+        }
+
+        [HttpPost("/article/create_article_comments")]
+        public IActionResult CreateArticleComments([FromBody] ArticleComments articleComment)
+        {
+            int articleId = articleComment.Article_Id;
+            string articleComments = articleComment.Comments;
+            DateTime comments_createdAt = articleComment.Created_At.ToUniversalTime();
+
+            ArticleCommentsDTO dto = new ArticleCommentsDTO();
+            dto.ArticleComment = new ArticleComments()
+            {
+                Article_Id = articleId,
+                Comments = articleComments,
+                Created_At = comments_createdAt.ToUniversalTime(),
+            };
+
+            entryRepository.CreateArticleComments(dto.ArticleComment);
+            return Json(new { success = true });
+        }
+
+        public JsonResult GetArticleComments([FromBody] ArticleComments articleComment)
+        {
+            int articleId = articleComment.Article_Id;
+            ArticleCommentsDTO articleCommentsDTO = new ArticleCommentsDTO();
+
+            articleCommentsDTO.ArticleComments = entryRepository.ListArticleComments(new ArticleCommentsFilter { Id = articleId });
+            return Json(articleCommentsDTO.ArticleComments);
+        }
+
+        [HttpPost("/article/Edit_article_comments")]
+        public IActionResult EditArticleComments([FromBody] ArticleComments articleComment)
+        {
+            int articleId = articleComment.Article_Id;
+            string articleComments = articleComment.Comments;
+            DateTime comments_createdAt = articleComment.Created_At.ToUniversalTime();
+
+            ArticleCommentsDTO dto = new ArticleCommentsDTO();
+            dto.ArticleComment = new ArticleComments()
+            {
+                Article_Id = articleId,
+                Comments = articleComments,
+                Created_At = comments_createdAt.ToUniversalTime(),
+                Id = 1 //TODO: need to get the current id
+            };
+
+            entryRepository.EditArticleComments(dto.ArticleComment);
             return Json(new { success = true });
         }
 

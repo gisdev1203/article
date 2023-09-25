@@ -38,3 +38,22 @@ ALTER TABLE IF EXISTS public.article
 --Since we have added the form_data(json) column in article already, so dropping form_data from the table article_form
 ALTER TABLE IF EXISTS public.article_form
     DROP COLUMN form_data;
+
+-- Table: public.article_comments intend to save the comments related to an article.
+
+
+CREATE SEQUENCE article_comments_id_seq START 1;
+
+CREATE TABLE IF NOT EXISTS public.article_comments
+(
+    id integer DEFAULT nextval('article_comments_id_seq'::regclass) NOT NULL,
+    article_id integer,
+    comments character varying COLLATE pg_catalog."default",
+    created_at date,
+    CONSTRAINT article_comments_pkey PRIMARY KEY (id)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.article_comments
+    OWNER to postgres;

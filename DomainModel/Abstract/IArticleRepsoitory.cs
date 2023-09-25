@@ -19,5 +19,8 @@ namespace DomainModel.Abstract
         ArticleTemp GetArticleTemp(int id);
         void UpdateArticleTemp(ArticleTemp articleTemp);
         void CreateNewArticleTemp(int articleId);
+        int CreateArticleComments(ArticleComments articleComments);
+        int EditArticleComments(ArticleComments articleComments);
+        List<ArticleComments> ListArticleComments(ArticleCommentsFilter articleCommentsFilter);
     }
 }
