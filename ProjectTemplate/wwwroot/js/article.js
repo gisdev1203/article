@@ -27,10 +27,11 @@ function tinycomments_create(req, done, fail) {
     var comments = req.content;
     var createdAt = req.createdAt;
     var articleId = $("#articleId").val();
+    let conversationUid = generateUUID();
 
     fetch('/article/create_article_comments', {
         method: 'POST',
-        body: JSON.stringify({ Article_Id: parseInt(articleId, 10), Comments: comments, Created_At: createdAt }),
+        body: JSON.stringify({ Article_Id: parseInt(articleId, 10), Comments: comments, Created_At: createdAt, Conversation_Uid: conversationUid }),
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
@@ -43,7 +44,6 @@ function tinycomments_create(req, done, fail) {
             return response.json();
         })
         .then((req2) => {
-            let conversationUid = 1;// req2.conversationUid; //TODO: hard coded for now
             done({ conversationUid: conversationUid });
         })
         .catch((e) => {
@@ -51,18 +51,14 @@ function tinycomments_create(req, done, fail) {
         });
 }
 
-function tinycomments_edit_comment(req, done, fail) {
-    let conversationUid = req.conversationUid;
-    let commentUid = req.commentUid;
-    let content = req.content;
-    let modifiedAt = req.modifiedAt;
+const tinycomments_edit_comment = (req, done, fail) => {
+    const { conversationUid, commentUid, content, modifiedAt } = req;
     var articleId = $("#articleId").val();
-
     fetch(
         '/article/edit_article_comments',
         {
             method: 'POST',
-            body: JSON.stringify({ Article_Id: parseInt(articleId, 10), Comments: content, Created_At: modifiedAt }),
+            body: JSON.stringify({ Article_Id: parseInt(articleId, 10), Comments: content, Modified_At: modifiedAt, Conversation_Uid: conversationUid, Comment_Uid: commentUid }),
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
@@ -76,51 +72,136 @@ function tinycomments_edit_comment(req, done, fail) {
             return response.json();
         })
         .then((req2) => {
-            let canEdit = req2.canEdit;
-            done({ canEdit: canEdit });
+            done({ canEdit: true });
         })
         .catch((e) => {
             fail(e);
         });
-}
+};
 
-function tinycomments_lookup({ conversationUid }, done, fail) {
-    let lookup = async function () {
+const tinycomments_reply = (req, done, fail) => {
+    const { conversationUid, content, createdAt } = req;
+    var articleId = $("#articleId").val();
+    var commentUid = generateUUID();
+
+    fetch('/article/reply_article_comments', {
+        method: 'POST',
+        body: JSON.stringify({ Article_Id: parseInt(articleId, 10), Comments: content, Created_At: createdAt, Conversation_Uid: conversationUid, Comment_Uid: commentUid }),
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        },
+    })
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error('Failed to reply to comment');
+            }
+            return response.json();
+        })
+        .then((req2) => {            
+            done({ commentUid });
+        })
+        .catch((e) => {
+            fail(e);
+        });
+};
+
+const tinycomments_delete = (req, done, fail) => {
+    const conversationUid = req.conversationUid;
+    var articleId = $("#articleId").val();
+
+    fetch('/article/delete_article_conversation', {
+        method: 'POST',
+        body: JSON.stringify({ Article_Id: parseInt(articleId, 10), Conversation_Uid: conversationUid }),
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        },
+    }).then((response) => {
+        if (response.ok) {
+            done({ canDelete: true });
+        } else if (response.status === 403) {
+            done({ canDelete: false });
+        } else {
+            fail(new Error('Something has gone wrong...'));
+        }
+    });
+};
+
+const tinycomments_delete_all = (_req, done, fail) => {
+    var articleId = $("#articleId").val();
+
+    fetch('/article/delete_article_conversations', {
+        method: 'POST',
+        body: JSON.stringify({ Article_Id: parseInt(articleId, 10) }),
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        },
+    }).then((response) => {
+        if (response.ok) {
+            done({ canDelete: true });
+        } else if (response.status === 403) {
+            done({ canDelete: false });
+        } else {
+            fail(new Error('Something has gone wrong...'));
+        }
+    });
+};
+
+const tinycomments_delete_comment = (req, done, fail) => {
+    const { conversationUid, commentUid } = req;
+    var articleId = $("#articleId").val();
+    fetch('/article/delete_article_comments', {
+        method: 'POST',
+        body: JSON.stringify({ Article_Id: parseInt(articleId, 10), Conversation_Uid: conversationUid, Comment_Uid: commentUid }),
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        },
+    }).then((response) => {
+        if (response.ok) {
+            done({ canDelete: true });
+        } else if (response.status === 403) {
+            done({ canDelete: false });
+        } else {
+            fail(new Error('Something has gone wrong...'));
+        }
+    });
+};
+
+const tinycomments_lookup = ({ conversationUid }, done, fail) => {
+    const lookup = async () => {
         var articleId = $("#articleId").val();
-        let convResp = await fetch(
-            '/Article/GetArticleComments', {
-                method: 'POST',
-                body: JSON.stringify({ Article_Id: parseInt(articleId, 10) }),
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
-        }// + conversationUid
+        const convResp = await fetch(
+            '/Article/GetArticleComments/', {
+            method: 'POST',
+            body: JSON.stringify({ Article_Id: parseInt(articleId, 10), Conversation_Uid: conversationUid }),
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+        }
         );
         if (!convResp.ok) {
             throw new Error('Failed to get conversation');
         }
-        let comments = await convResp.json();
-        //let usersResp = await fetch('/Article/GetArticleUsers');
+        const comments = await convResp.json();
+        //const usersResp = await fetch('https://api.example/users/');
         //if (!usersResp.ok) {
         //    throw new Error('Failed to get users');
         //}
-        //let { users } = await usersResp.json();
-        //let getUser = function (userId) {
-        //    return users.find((u) => {
-        //        return u.id === userId;
-        //    });
-        //};
+        //const { users } = await usersResp.json();
+        //const getUser = (userId) => users.find((u) => u.id === userId);
         return {
             conversation: {
-                uid: 1, //conversationUid, //TODO: hard coded for now
-                comments: comments.map((comment) => {
-                    return {
-                        ...comment,
-                        content: comment.comments,
-                        authorName: 'test_author' //getUser(comment.author)?.displayName, //TODO: need discussion on the author management, hard coded for now
-                    };
-                }),
+                uid: conversationUid,
+                comments: comments.map((comment) => ({
+                    ...comment,
+                    content: comment.comments,
+                    commentUid: comment.Comment_Uid,//comment.comment_Uid,
+                    authorName: 'test_author',//getUser(comment.author)?.displayName,
+                })),
             },
         };
     };
@@ -133,14 +214,14 @@ function tinycomments_lookup({ conversationUid }, done, fail) {
             console.error('Lookup failure ' + conversationUid, err);
             fail(err);
         });
-}
+};
 
 tinymce.init({
     selector: 'textarea#articleEditor',
     height: 800,
     plugins: 'code tinycomments help lists',
     toolbar:
-        'undo redo | formatselect | ' +
+        'undo redo | blocks | ' +
         'bold italic backcolor | alignleft aligncenter ' +
         'alignright alignjustify | bullist numlist outdent indent | ' +
         'removeformat | addcomment showcomments | help',
@@ -158,8 +239,8 @@ tinymce.init({
     tinycomments_delete_all,
     tinycomments_delete_comment,
     tinycomments_lookup,
-    tinycomments_author: 'test_author', //TODO: need discussion on the author management, hard coded for now
-    setup: function (editor) {
+    /* The following setup callback opens the comments sidebar when the editor loads */
+    setup: (editor) => {
         editor.on('SkinLoaded', () => {
             editor.execCommand('ToggleSidebar', false, 'showcomments');
         });
@@ -299,4 +380,15 @@ function getArticleForm(formData, articleId) {
         form.submit();
         alert('Article and form definition have been saved!');
     });
+}
+
+//We can use JavaScript's UUID package, but for now below solution is more robust! 
+function generateUUID() {
+    let dt = new Date().getTime();
+    const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        const r = (dt + Math.random() * 16) % 16 | 0;
+        dt = Math.floor(dt / 16);
+        return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+    });
+    return uuid;
 }

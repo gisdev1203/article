@@ -65,36 +65,42 @@ namespace ProjectTemplate.Controllers
         [HttpPost("/article/create_article_comments")]
         public IActionResult CreateArticleComments([FromBody] ArticleComments articleComment)
         {
-            int articleId = articleComment.Article_Id;
-            string articleComments = articleComment.Comments;
-            DateTime comments_createdAt = articleComment.Created_At.ToUniversalTime();
+            var articleId = articleComment.Article_Id;
+            var articleComments = articleComment.Comments;
+            var conversationId = articleComment.Conversation_Uid;
+            var commentId = articleComment.Comment_Uid;
+            var createdAt = articleComment.Created_At.ToUniversalTime();
 
             ArticleCommentsDTO dto = new ArticleCommentsDTO();
             dto.ArticleComment = new ArticleComments()
             {
                 Article_Id = articleId,
                 Comments = articleComments,
-                Created_At = comments_createdAt.ToUniversalTime(),
+                Created_At = createdAt.ToUniversalTime(),
+                Conversation_Uid = conversationId,
+                Comment_Uid = commentId,
             };
 
             entryRepository.CreateArticleComments(dto.ArticleComment);
             return Json(new { success = true });
         }
 
+        [HttpPost]
         public JsonResult GetArticleComments([FromBody] ArticleComments articleComment)
         {
-            int articleId = articleComment.Article_Id;
+            var articleId = articleComment.Article_Id;
+            var conversationId = articleComment.Conversation_Uid;
             ArticleCommentsDTO articleCommentsDTO = new ArticleCommentsDTO();
 
-            articleCommentsDTO.ArticleComments = entryRepository.ListArticleComments(new ArticleCommentsFilter { Id = articleId });
+            articleCommentsDTO.ArticleComments = entryRepository.ListArticleComments(new ArticleCommentsFilter { Id = articleId, Conversation_Id = conversationId });
             return Json(articleCommentsDTO.ArticleComments);
         }
 
-        [HttpPost("/article/Edit_article_comments")]
+        [HttpPost("/article/edit_article_comments")]
         public IActionResult EditArticleComments([FromBody] ArticleComments articleComment)
         {
-            int articleId = articleComment.Article_Id;
-            string articleComments = articleComment.Comments;
+            var articleId = articleComment.Article_Id;
+            var articleComments = articleComment.Comments;
             DateTime comments_createdAt = articleComment.Created_At.ToUniversalTime();
 
             ArticleCommentsDTO dto = new ArticleCommentsDTO();
@@ -108,6 +114,72 @@ namespace ProjectTemplate.Controllers
 
             entryRepository.EditArticleComments(dto.ArticleComment);
             return Json(new { success = true });
+        }
+
+        [HttpPost("/article/reply_article_comments")]
+        public IActionResult ReplyArticleComments([FromBody] ArticleComments articleComment)
+        {
+            var articleId = articleComment.Article_Id;
+            var articleComments = articleComment.Comments;
+            var createdAt = articleComment.Created_At.ToUniversalTime();
+            var conversationId = articleComment.Conversation_Uid;
+            var commentId = articleComment.Comment_Uid;
+
+            ArticleCommentsDTO dto = new ArticleCommentsDTO();
+            dto.ArticleComment = new ArticleComments()
+            {
+                Article_Id = articleId,
+                Comments = articleComments,
+                Created_At = createdAt.ToUniversalTime(),
+                Conversation_Uid = conversationId,
+                Comment_Uid = commentId
+            };
+
+            entryRepository.ReplyArticleComments(dto.ArticleComment);
+            return Json(new { success = true });
+        }
+
+        [HttpPost]
+        public IActionResult DeleteArticleComments([FromBody] ArticleComments articleComment)
+        {
+            var articleId = articleComment.Article_Id;
+            var conversationUid = articleComment.Conversation_Uid;
+            var commentUId = articleComment.Comment_Uid;
+            ArticleCommentsDTO articleCommentsDTO = new ArticleCommentsDTO();
+
+            bool result = entryRepository.DeleteArticleComments(new ArticleCommentsFilter 
+            { 
+                Id = articleId, 
+                Conversation_Id = conversationUid, 
+                Comment_Uid = commentUId 
+            });
+            return Json(new { success = result });
+        }
+
+
+        [HttpPost]
+        public IActionResult DeleteArticleConversation([FromBody] ArticleComments articleComment)
+        {
+            var articleId = articleComment.Article_Id;
+            var conversationId = articleComment.Conversation_Uid;
+            ArticleCommentsDTO articleCommentsDTO = new ArticleCommentsDTO();
+
+            bool result = entryRepository.DeleteArticleConversation(new ArticleCommentsFilter 
+            { 
+                Id = articleId, 
+                Conversation_Id = conversationId 
+            });
+            return Json(new { success = result });
+        }
+
+        [HttpPost]
+        public IActionResult DeleteArticleConversations([FromBody] ArticleComments articleComment)
+        {
+            var articleId = articleComment.Article_Id;
+            ArticleCommentsDTO articleCommentsDTO = new ArticleCommentsDTO();
+
+            bool result = entryRepository.DeleteArticleConversations(new ArticleCommentsFilter { Id = articleId });
+            return Json(new { success = result });
         }
 
         public IActionResult GetArticleFormDefinition(string type)

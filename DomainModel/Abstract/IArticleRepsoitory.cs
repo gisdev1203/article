@@ -21,6 +21,10 @@ namespace DomainModel.Abstract
         void CreateNewArticleTemp(int articleId);
         int CreateArticleComments(ArticleComments articleComments);
         int EditArticleComments(ArticleComments articleComments);
+        int ReplyArticleComments(ArticleComments articleComments);
         List<ArticleComments> ListArticleComments(ArticleCommentsFilter articleCommentsFilter);
+        bool DeleteArticleComments(ArticleCommentsFilter articleComments);
+        bool DeleteArticleConversation(ArticleCommentsFilter articleCommentsFilter);
+        bool DeleteArticleConversations(ArticleCommentsFilter articleCommentsFilter);
     }
 }

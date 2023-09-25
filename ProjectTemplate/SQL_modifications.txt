@@ -57,3 +57,15 @@ TABLESPACE pg_default;
 
 ALTER TABLE IF EXISTS public.article_comments
     OWNER to postgres;
+
+--The script adds conversation-uid in the the table article_comments that we will use for the unique identifier for the conversation
+ALTER TABLE IF EXISTS public.article_comments
+    ADD COLUMN conversation_uid character varying COLLATE pg_catalog."default";
+
+--The script adds comment-uid in the the table article_comments that we will use for the unique identifier for the comment
+ALTER TABLE IF EXISTS public.article_comments
+    ADD COLUMN comment_uid character varying COLLATE pg_catalog."default";
+
+--The script adds modified-at in the the table article_comments that we will use for the record of when a comment is modified
+ALTER TABLE IF EXISTS public.article_comments
+    ADD COLUMN modified_at date;

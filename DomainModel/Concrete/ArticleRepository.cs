@@ -115,18 +115,28 @@ namespace DomainModel.Concrete
 
         public int CreateArticleComments(ArticleComments articleComments)
         {
-            string sql = "INSERT INTO article_comments(article_id, comments, created_at) VALUES(@A, @B, @C) RETURNING Id";
-            return Execute(sql, new { A = articleComments.Article_Id, B = articleComments.Comments, C = articleComments.Created_At });
+            string sql = "INSERT INTO article_comments(article_id, comments, created_at, conversation_uid, comment_uid, modified_at) " +
+                            "VALUES(@A, @B, @C, @D, @E, @F) RETURNING Id";
+            return Execute(sql, new 
+            { 
+                A = articleComments.Article_Id, 
+                B = articleComments.Comments, 
+                C = articleComments.Created_At,
+                D = articleComments.Conversation_Uid, 
+                E = articleComments.Comment_Uid,
+                F = articleComments.Modified_At
+            });
         }
 
         public List<ArticleComments> ListArticleComments(ArticleCommentsFilter filter)
         {
             dynamic parameters = new ExpandoObject();
-            string sql = "SELECT id, article_id, comments, created_at FROM article_comments";
+            string sql = "SELECT id, article_id, comments, created_at,conversation_uid, comment_uid, modified_at FROM article_comments";
             if (filter.Id != null)
             {
                 parameters.A = filter.Id;
-                sql += " WHERE article_Id = @A";
+                parameters.B = filter.Conversation_Id;
+                sql += " WHERE article_Id = @A and conversation_uid  = @B";
             }
             return Query<ArticleComments>(sql, parameters);
         }
@@ -139,11 +149,62 @@ namespace DomainModel.Concrete
             {
                 parameters.A = articleComments.Comments;
                 parameters.B = articleComments.Article_Id;
-                parameters.C = articleComments.Id;
-                sql += "@A WHERE article_Id = @B and Id = @C";
+                parameters.C = articleComments.Conversation_Uid;
+                parameters.D = articleComments.Comment_Uid;
+                parameters.E = articleComments.Modified_At;
+                sql += "@A WHERE article_Id = @B and  conversation_uid = @C and comment_uid = @D and conversation_uid = @E";
             }
 
             return Execute(sql, parameters);
+        }
+
+        public int ReplyArticleComments(ArticleComments articleComments)
+        {
+            string sql = "INSERT INTO article_comments(article_id, comments, created_at, conversation_uid, comment_uid, modified_at) " +
+                            "VALUES(@A, @B, @C, @D, @E, @F) RETURNING Id";
+            return Execute(sql, new
+            {
+                A = articleComments.Article_Id,
+                B = articleComments.Comments,
+                C = articleComments.Created_At,
+                D = articleComments.Conversation_Uid,
+                E = articleComments.Comment_Uid,
+                F = articleComments.Modified_At
+            });
+        }
+
+        public bool DeleteArticleComments(ArticleCommentsFilter articleCommentsFilter)
+        {
+            string sql = "delete from article_comments where article_id = @A and conversation_uid = @B and comment_uid = @C";
+            Execute(sql, new
+            {
+                A = articleCommentsFilter.Id,
+                B = articleCommentsFilter.Conversation_Id,
+                C = articleCommentsFilter.Comment_Uid
+            });
+
+            return true; //TODO: need to handle delete
+        }
+
+        public bool DeleteArticleConversation(ArticleCommentsFilter articleCommentsFilter)
+        {
+            string sql = "delete from article_comments where article_id = @A and conversation_uid = @B";
+            Execute(sql, new
+            {
+                A = articleCommentsFilter.Id,
+                B = articleCommentsFilter.Conversation_Id
+            });
+            return true; //TODO: need to handle delete
+        }
+
+        public bool DeleteArticleConversations(ArticleCommentsFilter articleCommentsFilter)
+        {
+            string sql = "delete from article_comments where article_id = @A";
+            Execute(sql, new
+            {
+                A = articleCommentsFilter.Id
+            });
+            return true; //TODO: need to handle delete
         }
     }
 }
