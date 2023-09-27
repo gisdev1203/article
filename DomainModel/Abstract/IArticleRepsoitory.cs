@@ -18,7 +18,7 @@ namespace DomainModel.Abstract
         void UpdateArticleForm(Article article);
         ArticleTemp GetArticleTemp(int id);
         void UpdateArticleTemp(ArticleTemp articleTemp);
-        void CreateNewArticleTemp(int articleId);
+        void CreateNewArticleTemp(int id_article);
         int CreateArticleComments(ArticleComments articleComments);
         int EditArticleComments(ArticleComments articleComments);
         int ReplyArticleComments(ArticleComments articleComments);

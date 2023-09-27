@@ -13,10 +13,10 @@ namespace ProjectTemplate.Controllers
 {
     public class HomeController : Controller
     {
-        private IArticleRepository entryRepository = null;
-        public HomeController(IArticleRepository entryRepository)
+        private IArticleRepository articleRepository = null;
+        public HomeController(IArticleRepository articleRepository)
         {
-            this.entryRepository = entryRepository;
+            this.articleRepository = articleRepository;
         }
       
         public IActionResult Index()
@@ -28,7 +28,7 @@ namespace ProjectTemplate.Controllers
         public IActionResult PageTest()
         {
             TestDTO dto = new TestDTO();
-            dto.TestObjects = entryRepository.GetDataFromTestTable(3);
+            dto.TestObjects = articleRepository.GetDataFromTestTable(3);
             return View("PageTest", dto);
         }
     }

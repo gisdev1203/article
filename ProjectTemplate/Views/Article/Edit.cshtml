@@ -7,8 +7,8 @@
 }
 
 @{
-    var formData = @Html.Raw(JsonConvert.SerializeObject(Model.ArticleObjects.FirstOrDefault().Form_Data));
-    var articleId = @Model.ArticleObjects.FirstOrDefault().Id;
+    var formData = @Html.Raw(JsonConvert.SerializeObject(Model.Articles.FirstOrDefault().Form_Data));
+    var id_article = @Model.Articles.FirstOrDefault().Id;
 }
 
 @section HeaderContent
@@ -25,11 +25,11 @@
 @section MainContent
     {
 
-    <input type="hidden" id="articleId" value="@Model.ArticleObjects.FirstOrDefault().Id" />
+    <input type="hidden" id="id_article" value="@Model.Articles.FirstOrDefault().Id" />
     <div id="parentdiv">
         <div class="panel">
             <textarea id="articleEditor">
-                @Html.Raw(Model.ArticleObjects.FirstOrDefault().Content)
+                @Html.Raw(Model.Articles.FirstOrDefault().Content)
                             </textarea>
         </div>
         <div class="panel">
@@ -104,7 +104,7 @@
     <script>
         $(document).ready(function () {
             autoSaveArticleInterval(); // Initial call to autoSaveArticleCycle    
-            getArticleForm(@formData, @articleId);
+            getArticleForm(@formData, @id_article);
         });
     </script>
 }

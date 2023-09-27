@@ -1,37 +1,13 @@
 ﻿
-$(document).ready(function () {
-    $("#createArticleBtn").click(function () {
-        $.ajax({
-            type: "POST",
-            url: "/article/create_new_article",
-            data: {
-                article_type: 1, //hard coded for now
-            },
-            dataType: "json",
-            success: function (data) {
-                if (data.articleId) {
-                    // Redirect to the edit page of the newly created article.
-                    window.location.href = "/article/edit/" + data.articleId;
-                } else {
-                    alert("Failed to create a new article.");
-                }
-            },
-            error: function () {
-                alert("An error occurred while creating a new article.");
-            }
-        });
-    });
-});
-
 function tinycomments_create(req, done, fail) {
     var comments = req.content;
     var createdAt = req.createdAt;
-    var articleId = $("#articleId").val();
-    let conversationUid = generateUUID();
+    var id_article = $("#id_article").val();
+    let id_conversation = generateUUID();
 
     fetch('/article/create_article_comments', {
         method: 'POST',
-        body: JSON.stringify({ Article_Id: parseInt(articleId, 10), Comments: comments, Created_At: createdAt, Conversation_Uid: conversationUid }),
+        body: JSON.stringify({ Id_article: parseInt(id_article, 10), Comments: comments, Created_At: createdAt, Id_conversation: id_conversation }),
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
@@ -44,7 +20,7 @@ function tinycomments_create(req, done, fail) {
             return response.json();
         })
         .then((req2) => {
-            done({ conversationUid: conversationUid });
+            done({ conversationUid: id_conversation });
         })
         .catch((e) => {
             fail(e);
@@ -52,13 +28,16 @@ function tinycomments_create(req, done, fail) {
 }
 
 const tinycomments_edit_comment = (req, done, fail) => {
-    const { conversationUid, commentUid, content, modifiedAt } = req;
-    var articleId = $("#articleId").val();
+    var id_conversation = req.conversationUid;
+    var id_comment = req.commentUid;
+    var content = req.content;
+    var modifiedAt = req.modifiedAt;
+    var id_article = $("#id_article").val();
     fetch(
         '/article/edit_article_comments',
         {
             method: 'POST',
-            body: JSON.stringify({ Article_Id: parseInt(articleId, 10), Comments: content, Modified_At: modifiedAt, Conversation_Uid: conversationUid, Comment_Uid: commentUid }),
+            body: JSON.stringify({ Id_article: parseInt(id_article, 10), Comments: content, Modified_At: modifiedAt, Id_conversation: id_conversation, id_comment: id_comment }),
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
@@ -81,12 +60,12 @@ const tinycomments_edit_comment = (req, done, fail) => {
 
 const tinycomments_reply = (req, done, fail) => {
     const { conversationUid, content, createdAt } = req;
-    var articleId = $("#articleId").val();
+    var id_article = $("#id_article").val();
     var commentUid = generateUUID();
 
     fetch('/article/reply_article_comments', {
         method: 'POST',
-        body: JSON.stringify({ Article_Id: parseInt(articleId, 10), Comments: content, Created_At: createdAt, Conversation_Uid: conversationUid, Comment_Uid: commentUid }),
+        body: JSON.stringify({ Id_article: parseInt(id_article, 10), Comments: content, Created_At: createdAt, id_conversation: conversationUid, id_comment: commentUid }),
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
@@ -108,11 +87,11 @@ const tinycomments_reply = (req, done, fail) => {
 
 const tinycomments_delete = (req, done, fail) => {
     const conversationUid = req.conversationUid;
-    var articleId = $("#articleId").val();
+    var id_article = $("#id_article").val();
 
     fetch('/article/delete_article_conversation', {
         method: 'POST',
-        body: JSON.stringify({ Article_Id: parseInt(articleId, 10), Conversation_Uid: conversationUid }),
+        body: JSON.stringify({ Id_article: parseInt(id_article, 10), Id_conversation: conversationUid }),
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
@@ -129,11 +108,11 @@ const tinycomments_delete = (req, done, fail) => {
 };
 
 const tinycomments_delete_all = (_req, done, fail) => {
-    var articleId = $("#articleId").val();
+    var id_article = $("#id_article").val();
 
     fetch('/article/delete_article_conversations', {
         method: 'POST',
-        body: JSON.stringify({ Article_Id: parseInt(articleId, 10) }),
+        body: JSON.stringify({ Article_Id: parseInt(id_article, 10) }),
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
@@ -151,10 +130,10 @@ const tinycomments_delete_all = (_req, done, fail) => {
 
 const tinycomments_delete_comment = (req, done, fail) => {
     const { conversationUid, commentUid } = req;
-    var articleId = $("#articleId").val();
+    var id_article = $("#id_article").val();
     fetch('/article/delete_article_comments', {
         method: 'POST',
-        body: JSON.stringify({ Article_Id: parseInt(articleId, 10), Conversation_Uid: conversationUid, Comment_Uid: commentUid }),
+        body: JSON.stringify({ Id_article: parseInt(id_article, 10), Id_conversation: conversationUid, Id_comment: commentUid }),
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
@@ -172,11 +151,11 @@ const tinycomments_delete_comment = (req, done, fail) => {
 
 const tinycomments_lookup = ({ conversationUid }, done, fail) => {
     const lookup = async () => {
-        var articleId = $("#articleId").val();
+        var id_article = $("#id_article").val();
         const convResp = await fetch(
             '/Article/GetArticleComments/', {
             method: 'POST',
-            body: JSON.stringify({ Article_Id: parseInt(articleId, 10), Conversation_Uid: conversationUid }),
+            body: JSON.stringify({ Id_article: parseInt(id_article, 10), Id_conversation: conversationUid }),
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
@@ -199,7 +178,7 @@ const tinycomments_lookup = ({ conversationUid }, done, fail) => {
                 comments: comments.map((comment) => ({
                     ...comment,
                     content: comment.comments,
-                    commentUid: comment.Comment_Uid,//comment.comment_Uid,
+                    commentUid: comment.Id_comment,
                     authorName: 'test_author',//getUser(comment.author)?.displayName,
                 })),
             },
@@ -252,7 +231,7 @@ function saveArticle() {
     if (editorContent === "")
         return;
     var comments = "";
-    var articleId = getCurrentArticleId();
+    var id_article = getCurrentArticleId();
     //TODO: comments plugin requires discussion related to the selection of mode and saving the comments in database
     //1. Callback mode
     //2. Embedded mode
@@ -261,7 +240,7 @@ function saveArticle() {
     $.ajax({
         type: "POST",
         url: "/Article/SaveArticle",
-        data: { content: editorContent, comments: comments, id: articleId },
+        data: { content: editorContent, comments: comments, id: id_article },
         success: function (result) {
             if (result.success) {
                 console.log("Content saved successfully.");
@@ -281,7 +260,7 @@ function autoSaveArticle() {
     if (editorContent === "")
         return;
     var comments = "";
-    var articleId = getCurrentArticleId();
+    var id_article = getCurrentArticleId();
     //TODO: comments plugin requires discussion related to the selection of mode and saving the comments in database
     //1. Callback mode
     //2. Embedded mode
@@ -290,7 +269,7 @@ function autoSaveArticle() {
     $.ajax({
         type: "POST",
         url: "/Article/AutoSaveArticle",
-        data: { content: editorContent, comments: comments, id: articleId },
+        data: { content: editorContent, comments: comments, id: id_article },
         success: function (result) {
             if (result.success) {
                 console.log("Content saved successfully.");
@@ -325,7 +304,7 @@ function cancel() {
     window.location.href = "/article/articles/";
 }
 
-function getArticleForm(formData, articleId) {
+function getArticleForm(formData, id_article) {
     let form;
     var existingFormData = formData;
 
@@ -356,7 +335,7 @@ function getArticleForm(formData, articleId) {
                                 url: '/article/save_form_data',
                                 data: {
                                     formData: formDataString,
-                                    articleId: articleId
+                                    id_article: id_article
                                 },
                                 dataType: 'json',
                                 success: function (response) {

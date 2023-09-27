@@ -12,162 +12,102 @@ namespace ProjectTemplate.Controllers
 {
     public class ArticleController : Controller
     {
-        private IArticleRepository entryRepository = null;
-        public ArticleController(IArticleRepository entryRepository)
+        private IArticleRepository articleRepository = null;
+        public ArticleController(IArticleRepository articleRepository)
         {
-            this.entryRepository = entryRepository;
+            this.articleRepository = articleRepository;
         }
 
         // GET: ArticleController
         public IActionResult Articles()
         {
             ArticleDTO dto = new ArticleDTO();
-            dto.ArticleObjects = entryRepository.ListArticles(new ArticleFilter { });
+            dto.Articles = articleRepository.ListArticles(new ArticleFilter { });
             return View("Articles", dto);
         }
 
         [HttpPost]
         public JsonResult CreateNewArticle(int article_type)
         {
-            int newArticleId = entryRepository.CreateNewArticle(article_type);
-            entryRepository.CreateNewArticleTemp(newArticleId);
-            return Json(new { articleId = newArticleId });
+            int id = articleRepository.CreateNewArticle(article_type);
+            return Json(new { Id_article = id });
         }
 
         // GET: ArticleController/Edit/5
         public IActionResult EditArticle(int id)
         {
             ArticleDTO dto = new ArticleDTO();
-            dto.ArticleObjects = entryRepository.ListArticles(new ArticleFilter { Id = id });
+            dto.Articles = articleRepository.ListArticles(new ArticleFilter { Id = id });
             return View("Edit", dto);
         }
 
         public IActionResult AutoSaveArticle(string content, string comments, int id)
         {
-            ArticleDTO dto = new ArticleDTO();
-            dto.ArticleTemp = entryRepository.GetArticleTemp(id);
-            dto.ArticleTemp.Content = content;
+            ArticleTemp article_temp = articleRepository.GetArticleTemp(id);
+            article_temp.Content = content;
 
-            entryRepository.UpdateArticleTemp(dto.ArticleTemp);
+            articleRepository.UpdateArticleTemp(article_temp);
             return Json(new { success = true });
         }
 
         public IActionResult SaveArticle(string content, string comments, int id)
         {
-            ArticleDTO dto = new ArticleDTO();
-            dto.Article = entryRepository.ListArticles(new ArticleFilter { Id = id }).FirstOrDefault();
-            dto.Article.Content = content;
+            Article article = articleRepository.ListArticles(new ArticleFilter { Id = id }).FirstOrDefault();
+            article.Content = content;
 
-            entryRepository.UpdateArticle(dto.Article);
-            return Json(new { success = true });
-        }
-
-        [HttpPost("/article/create_article_comments")]
-        public IActionResult CreateArticleComments([FromBody] ArticleComments articleComment)
-        {
-            var articleId = articleComment.Article_Id;
-            var articleComments = articleComment.Comments;
-            var conversationId = articleComment.Conversation_Uid;
-            var commentId = articleComment.Comment_Uid;
-            var createdAt = articleComment.Created_At.ToUniversalTime();
-
-            ArticleCommentsDTO dto = new ArticleCommentsDTO();
-            dto.ArticleComment = new ArticleComments()
-            {
-                Article_Id = articleId,
-                Comments = articleComments,
-                Created_At = createdAt.ToUniversalTime(),
-                Conversation_Uid = conversationId,
-                Comment_Uid = commentId,
-            };
-
-            entryRepository.CreateArticleComments(dto.ArticleComment);
+            articleRepository.UpdateArticle(article);
             return Json(new { success = true });
         }
 
         [HttpPost]
-        public JsonResult GetArticleComments([FromBody] ArticleComments articleComment)
+        public IActionResult CreateArticleComments([FromBody] ArticleComments articleComment)
         {
-            var articleId = articleComment.Article_Id;
-            var conversationId = articleComment.Conversation_Uid;
-            ArticleCommentsDTO articleCommentsDTO = new ArticleCommentsDTO();
-
-            articleCommentsDTO.ArticleComments = entryRepository.ListArticleComments(new ArticleCommentsFilter { Id = articleId, Conversation_Id = conversationId });
-            return Json(articleCommentsDTO.ArticleComments);
-        }
-
-        [HttpPost("/article/edit_article_comments")]
-        public IActionResult EditArticleComments([FromBody] ArticleComments articleComment)
-        {
-            var articleId = articleComment.Article_Id;
-            var articleComments = articleComment.Comments;
-            DateTime comments_createdAt = articleComment.Created_At.ToUniversalTime();
-
-            ArticleCommentsDTO dto = new ArticleCommentsDTO();
-            dto.ArticleComment = new ArticleComments()
-            {
-                Article_Id = articleId,
-                Comments = articleComments,
-                Created_At = comments_createdAt.ToUniversalTime(),
-                Id = 1 //TODO: need to get the current id
-            };
-
-            entryRepository.EditArticleComments(dto.ArticleComment);
+            articleRepository.CreateArticleComments(articleComment);
             return Json(new { success = true });
         }
 
-        [HttpPost("/article/reply_article_comments")]
+        [HttpPost]
+        public JsonResult GetArticleComments(ArticleComments articleComment)
+        {
+            var id_article = articleComment.Id_article;
+            var id_conversation = articleComment.Id_conversation;
+            List<ArticleComments> article_comments = articleRepository.ListArticleComments(new ArticleCommentsFilter { Id = id_article, Id_conversation = id_conversation });
+            return Json(article_comments);
+        }
+
+        [HttpPost]
+        public IActionResult EditArticleComments([FromBody] ArticleComments articleComment)
+        {
+            articleRepository.EditArticleComments(articleComment);
+            return Json(new { success = true });
+        }
+
+        [HttpPost]
         public IActionResult ReplyArticleComments([FromBody] ArticleComments articleComment)
         {
-            var articleId = articleComment.Article_Id;
-            var articleComments = articleComment.Comments;
-            var createdAt = articleComment.Created_At.ToUniversalTime();
-            var conversationId = articleComment.Conversation_Uid;
-            var commentId = articleComment.Comment_Uid;
-
-            ArticleCommentsDTO dto = new ArticleCommentsDTO();
-            dto.ArticleComment = new ArticleComments()
-            {
-                Article_Id = articleId,
-                Comments = articleComments,
-                Created_At = createdAt.ToUniversalTime(),
-                Conversation_Uid = conversationId,
-                Comment_Uid = commentId
-            };
-
-            entryRepository.ReplyArticleComments(dto.ArticleComment);
+            articleRepository.ReplyArticleComments(articleComment);
             return Json(new { success = true });
         }
 
         [HttpPost]
         public IActionResult DeleteArticleComments([FromBody] ArticleComments articleComment)
         {
-            var articleId = articleComment.Article_Id;
-            var conversationUid = articleComment.Conversation_Uid;
-            var commentUId = articleComment.Comment_Uid;
-            ArticleCommentsDTO articleCommentsDTO = new ArticleCommentsDTO();
-
-            bool result = entryRepository.DeleteArticleComments(new ArticleCommentsFilter 
+            bool result = articleRepository.DeleteArticleComments(new ArticleCommentsFilter 
             { 
-                Id = articleId, 
-                Conversation_Id = conversationUid, 
-                Comment_Uid = commentUId 
+                Id = articleComment.Id_article, 
+                Id_conversation = articleComment.Id_conversation, 
+                Id_comment = articleComment.Id_comment
             });
             return Json(new { success = result });
         }
 
-
         [HttpPost]
         public IActionResult DeleteArticleConversation([FromBody] ArticleComments articleComment)
         {
-            var articleId = articleComment.Article_Id;
-            var conversationId = articleComment.Conversation_Uid;
-            ArticleCommentsDTO articleCommentsDTO = new ArticleCommentsDTO();
-
-            bool result = entryRepository.DeleteArticleConversation(new ArticleCommentsFilter 
+            bool result = articleRepository.DeleteArticleConversation(new ArticleCommentsFilter 
             { 
-                Id = articleId, 
-                Conversation_Id = conversationId 
+                Id = articleComment.Id_article, 
+                Id_conversation = articleComment.Id_conversation
             });
             return Json(new { success = result });
         }
@@ -175,33 +115,29 @@ namespace ProjectTemplate.Controllers
         [HttpPost]
         public IActionResult DeleteArticleConversations([FromBody] ArticleComments articleComment)
         {
-            var articleId = articleComment.Article_Id;
-            ArticleCommentsDTO articleCommentsDTO = new ArticleCommentsDTO();
-
-            bool result = entryRepository.DeleteArticleConversations(new ArticleCommentsFilter { Id = articleId });
+            var id_article = articleComment.Id_article;
+            bool result = articleRepository.DeleteArticleConversations(new ArticleCommentsFilter { Id = id_article });
             return Json(new { success = result });
         }
 
         public IActionResult GetArticleFormDefinition(string type)
         {
-            ArticleFormDTO dto = new ArticleFormDTO();
-            dto.ArticleForm = entryRepository.ListArticleForm(new ArticleFormFilter { type = type }).FirstOrDefault();
+            ArticleForm articleForms = articleRepository.ListArticleForm(new ArticleFormFilter { type = type }).FirstOrDefault();
 
             return Json(new
             {
-                articleFormId = dto.ArticleForm.Id,
-                articleFormType = dto.ArticleForm.Type,
-                articleFormDefinition = dto.ArticleForm.Form_Definition,
+                articleFormId = articleForms.Id,
+                articleFormType = articleForms.Type,
+                articleFormDefinition = articleForms.Form_Definition,
             });
         }
 
-        public IActionResult SaveArticleForm(int articleId, string formData)
+        public IActionResult SaveArticleForm(int id_article, string formData)
         {
-            ArticleDTO dto = new ArticleDTO();
-            dto.Article = entryRepository.ListArticles(new ArticleFilter { Id = articleId }).FirstOrDefault();
-            dto.Article.Form_Data = formData;
+            Article article = articleRepository.ListArticles(new ArticleFilter { Id = id_article }).FirstOrDefault();
+            article.Form_Data = formData;
 
-            entryRepository.UpdateArticleForm(dto.Article);
+            articleRepository.UpdateArticleForm(article);
             return Json(new { success = true });
         }
 
