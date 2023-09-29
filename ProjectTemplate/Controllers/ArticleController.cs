@@ -67,10 +67,11 @@ namespace ProjectTemplate.Controllers
         }
 
         [HttpPost]
-        public JsonResult GetArticleComments(ArticleComments articleComment)
+        public JsonResult GetArticleComments([FromBody] ArticleComments articleComment)
         {
             var id_article = articleComment.Id_article;
             var id_conversation = articleComment.Id_conversation;
+
             List<ArticleComments> article_comments = articleRepository.ListArticleComments(new ArticleCommentsFilter { Id = id_article, Id_conversation = id_conversation });
             return Json(article_comments);
         }
@@ -86,16 +87,17 @@ namespace ProjectTemplate.Controllers
         public IActionResult ReplyArticleComments([FromBody] ArticleComments articleComment)
         {
             articleRepository.ReplyArticleComments(articleComment);
+
             return Json(new { success = true });
         }
 
         [HttpPost]
         public IActionResult DeleteArticleComments([FromBody] ArticleComments articleComment)
         {
-            bool result = articleRepository.DeleteArticleComments(new ArticleCommentsFilter 
-            { 
-                Id = articleComment.Id_article, 
-                Id_conversation = articleComment.Id_conversation, 
+            bool result = articleRepository.DeleteArticleComments(new ArticleCommentsFilter
+            {
+                Id = articleComment.Id_article,
+                Id_conversation = articleComment.Id_conversation,
                 Id_comment = articleComment.Id_comment
             });
             return Json(new { success = result });
@@ -104,9 +106,9 @@ namespace ProjectTemplate.Controllers
         [HttpPost]
         public IActionResult DeleteArticleConversation([FromBody] ArticleComments articleComment)
         {
-            bool result = articleRepository.DeleteArticleConversation(new ArticleCommentsFilter 
-            { 
-                Id = articleComment.Id_article, 
+            bool result = articleRepository.DeleteArticleConversation(new ArticleCommentsFilter
+            {
+                Id = articleComment.Id_article,
                 Id_conversation = articleComment.Id_conversation
             });
             return Json(new { success = result });

@@ -50,24 +50,29 @@ namespace ProjectTemplate
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllerRoute(name: "test_page", pattern: "page_test", new { controller = "Home", action = "PageTest", page_name = "test_page" });
 
                 //Main pages route. (To be transalted)
                 endpoints.MapControllerRoute(name: "article_page", pattern: "article/edit/{id}", new { controller = "Article", action = "EditArticle", page_name = "article_page" });
                 endpoints.MapControllerRoute(name: "all_articles", pattern: "article/articles", new { controller = "Article", action = "Articles", page_name = "all_articles" });
+                              
+                endpoints.MapControllerRoute(name: "test_page", pattern: "page_test", new { controller = "Home", action = "PageTest", page_name = "test_page" });
 
                 //Ajax routes
                 endpoints.MapControllerRoute(name: "article_page_creation", pattern: "article/create_new_article", new { controller = "Article", action = "CreateNewArticle", page_name = "article_page_creation" });
+                endpoints.MapControllerRoute(name: "article_lookup_comments", pattern: "article/GetArticleComments", new { controller = "Article", action = "GetArticleComments", page_name = "article_lookup_comments" });
+                endpoints.MapControllerRoute(name: "article_edit_comments", pattern: "article/edit_article_comments", new { controller = "Article", action = "EditArticleComments", page_name = "article_edit_comments" });
+                endpoints.MapControllerRoute(name: "article_reply_comments", pattern: "article/reply_article_comments", new { controller = "Article", action = "ReplyArticleComments", page_name = "article_reply_comments" });
+
+
+
                 endpoints.MapControllerRoute(name: "article_form_definition", pattern: "article/get_article_form_definition", new { controller = "Article", action = "GetArticleFormDefinition", page_name = "article_form_definition" });
                 endpoints.MapControllerRoute(name: "article_form_save_data", pattern: "article/save_form_data", new { controller = "Article", action = "SaveArticleForm", page_name = "article_form_save_data" });
                 endpoints.MapControllerRoute(name: "article_create_comments", pattern: "article/create_article_comments", new { controller = "Article", action = "CreateArticleComments", page_name = "article_create_comments" });
-                endpoints.MapControllerRoute(name: "article_edit_comments", pattern: "article/edit_article_comments", new { controller = "Article", action = "EditArticleComments", page_name = "article_edit_comments" });
-                endpoints.MapControllerRoute(name: "article_reply_comments", pattern: "article/reply_article_comments", new { controller = "Article", action = "ReplyArticleComments", page_name = "article_reply_comments" });
                 endpoints.MapControllerRoute(name: "article_delete_comments", pattern: "article/delete_article_comments", new { controller = "Article", action = "DeleteArticleComments", page_name = "article_delete_comments" });
 
                 endpoints.MapControllerRoute(name: "article_delete_conversation", pattern: "article/delete_article_conversation", new { controller = "Article", action = "DeleteArticleConversation", page_name = "article_delete_conversation" });
                 endpoints.MapControllerRoute(name: "article_delete_all_conversations", pattern: "article/delete_article_conversations", new { controller = "Article", action = "DeleteArticleConversations", page_name = "article_delete_all_conversations" });
-                
+
                 endpoints.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
             });
         }

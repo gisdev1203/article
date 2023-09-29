@@ -12,6 +12,7 @@ using System.Xml.Linq;
 using Npgsql;
 using NpgsqlTypes;
 using static System.Net.WebRequestMethods;
+using System.Reflection.Metadata;
 
 namespace DomainModel.Concrete
 {
@@ -36,6 +37,7 @@ namespace DomainModel.Concrete
             return Query<Article>(sql, parameters);
         }
 
+
         public List<Article> GetArticle(int id)
         {
             string sql = "SELECT id, name, content FROM article WHERE id = @A";
@@ -51,7 +53,6 @@ namespace DomainModel.Concrete
         public int CreateNewArticle(int article_type)
         {
             var newArticleName = "Article test";
-
             //TODO: We will change the article name later
             string sql = "INSERT INTO article(name, is_deleted, id_form) VALUES(@A, false, @B) RETURNING Id";
             return ExecuteScalar(sql, new { A = newArticleName, B = article_type });
@@ -150,7 +151,7 @@ namespace DomainModel.Concrete
                 parameters.C = articleComments.Id_conversation;
                 parameters.D = articleComments.Id_comment;
                 parameters.E = articleComments.Modified_at;
-                sql += "@A WHERE id_article = @B and  id_conversation = @C and id_comment = @D and id_conversation = @E";
+                sql += "@A, modified_at = @E, id_comment = @D WHERE id_article = @B and  id_conversation = @C";
             }
 
             return Execute(sql, parameters);
@@ -158,17 +159,23 @@ namespace DomainModel.Concrete
 
         public int ReplyArticleComments(ArticleComments articleComments)
         {
+            dynamic parameters = new ExpandoObject();
+
+            if (articleComments.Id_article > 0)
+            {
+                parameters.A = articleComments.Id_article;
+                parameters.B = articleComments.Comments;
+                parameters.C = articleComments.Created_at;
+                parameters.D = articleComments.Id_conversation;
+                parameters.E = articleComments.Id_comment;
+                parameters.F = articleComments.Modified_at;
+                
+            }
+
             string sql = "INSERT INTO article_comments(id_article, comments, created_at, id_conversation, id_comment, modified_at) " +
                             "VALUES(@A, @B, @C, @D, @E, @F) RETURNING Id";
-            return Execute(sql, new
-            {
-                A = articleComments.Id_article,
-                B = articleComments.Comments,
-                C = articleComments.Created_at,
-                D = articleComments.Id_conversation,
-                E = articleComments.Id_comment,
-                F = articleComments.Modified_at
-            });
+
+            return Execute(sql, parameters);
         }
 
         public bool DeleteArticleComments(ArticleCommentsFilter articleCommentsFilter)

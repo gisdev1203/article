@@ -44,7 +44,7 @@
     <script type="text/javascript">
     
 $(document).ready(function () {
-    $("#createArticleBtn").click(function () {
+    $("#createArticleBtn").click(function () {        
         $.ajax({
             type: "POST",
             url: "/article/create_new_article",
@@ -64,6 +64,7 @@ $(document).ready(function () {
                 alert("An error occurred while creating a new article.");
             }
         });
+        
     });
 });    
     </script>
