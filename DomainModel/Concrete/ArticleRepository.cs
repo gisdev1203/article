@@ -99,6 +99,16 @@ namespace DomainModel.Concrete
             string sql = "INSERT INTO article_temp(id_article, content) VALUES(@A, @B)";
             Execute(sql, new { A = id_article, B = "" });
         }
+        public bool DeleteArticleTemp(int id_article)
+        {
+            string sql = "delete from article_temp where id_article = @A";
+            Execute(sql, new
+            {
+                A = id_article,                
+            });
+
+            return true; //TODO: need to handle delete
+        }
 
         public ArticleTemp GetArticleTemp(int id)
         {
@@ -135,7 +145,7 @@ namespace DomainModel.Concrete
             {
                 parameters.A = filter.Id;
                 parameters.B = filter.Id_conversation;
-                sql += " WHERE id_article = @A and id_conversation  = @B";
+                sql += " WHERE id_article = @A and id_conversation  = @B ORDER BY id";
             }
             return Query<ArticleComments>(sql, parameters);
         }
@@ -148,10 +158,17 @@ namespace DomainModel.Concrete
             {
                 parameters.A = articleComments.Comments;
                 parameters.B = articleComments.Id_article;
-                parameters.C = articleComments.Id_conversation;
-                parameters.D = articleComments.Id_comment;
+                parameters.C = articleComments.Id_conversation;                
                 parameters.E = articleComments.Modified_at;
-                sql += "@A, modified_at = @E, id_comment = @D WHERE id_article = @B and  id_conversation = @C";
+                parameters.D = articleComments.Id_comment;
+
+                if (articleComments.Id_comment == null)
+                {
+                    
+                    sql += "@A, modified_at = @E WHERE id_article = @B and  id_conversation = @C and  id_comment is NULL";
+
+                }
+                else sql += "@A, modified_at = @E WHERE id_article = @B and  id_conversation = @C and  id_comment = @D";
             }
 
             return Execute(sql, parameters);

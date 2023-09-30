@@ -4,9 +4,11 @@
  ********************************/
 
 const tinycomments_create = (req, done, fail) => {
+    console.log('create_coment')
     const { content, createdAt } = req;
     var id_article = $("#id_article").val();
     let id_conversation = generateUUID();
+    console.log(createdAt)
 
     fetch('/article/create_article_comments', {
         method: 'POST',
@@ -32,6 +34,7 @@ const tinycomments_create = (req, done, fail) => {
 };
 
 const tinycomments_reply = (req, done, fail) => {
+    console.log('create_reply')
     const { conversationUid, content, createdAt } = req;
     let id_comment = generateUUID();
     var id_article = $("#id_article").val();
@@ -39,7 +42,7 @@ const tinycomments_reply = (req, done, fail) => {
     console.log({ Comments: content, Created_At: createdAt, Modified_at: createdAt, Id_conversation: conversationUid, Id_article: parseInt(id_article, 10) });
     fetch(`/article/reply_article_comments`, {
         method: 'POST',
-        body: JSON.stringify({ Comments: content, Created_At: createdAt, Modified_at: createdAt, Id_conversation: conversationUid, Id_article: parseInt(id_article, 10) }),
+        body: JSON.stringify({ Comments: content, Created_At: createdAt, Modified_at: createdAt, Id_conversation: conversationUid, Id_article: parseInt(id_article, 10), Id_comment: id_comment }),
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
@@ -53,7 +56,10 @@ const tinycomments_reply = (req, done, fail) => {
         })
         .then((ref2) => {
             // let commentUid = ref2.commentUid;
-            done({ commentUid: id_comment });
+            console.log(id_comment);
+            console.log("relply");
+            // done({ conversationUid: id_comment,  });
+            done({ commentUid: id_comment, conversationUid: conversationUid, });
         })
         .catch((e) => {
             fail(e);
@@ -62,6 +68,7 @@ const tinycomments_reply = (req, done, fail) => {
 };
 
 const tinycomments_edit_comment = (req, done, fail) => {
+    console.log('create_edit');
     const { conversationUid, commentUid, content, modifiedAt } = req;
     console.log(req)
     var id_article = $("#id_article").val();
@@ -69,7 +76,7 @@ const tinycomments_edit_comment = (req, done, fail) => {
         '/article/edit_article_comments',
         {
             method: 'POST',
-            body: JSON.stringify({ Id_article: parseInt(id_article, 10), Comments: content, Modified_At: modifiedAt, Id_conversation: conversationUid, id_comment: commentUid }),
+            body: JSON.stringify({ Id_article: parseInt(id_article, 10), Comments: content, Modified_At: modifiedAt, Id_conversation: conversationUid, Id_comment: commentUid }),
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
@@ -92,6 +99,7 @@ const tinycomments_edit_comment = (req, done, fail) => {
 };
 
 const tinycomments_delete = (req, done, fail) => {
+    console.log('create_delet');
     const conversationUid = req.conversationUid;
     var id_article = $("#id_article").val();
 
@@ -126,6 +134,7 @@ const tinycomments_delete = (req, done, fail) => {
 };
 
 const tinycomments_delete_all = (_req, done, fail) => {
+    console.log('tinycomments_delete_all');
     fetch('https://api.example/conversations', {
         method: 'DELETE',
     }).then((response) => {
@@ -141,13 +150,19 @@ const tinycomments_delete_all = (_req, done, fail) => {
 
 const tinycomments_delete_comment = (req, done, fail) => {
     const { conversationUid, commentUid } = req;
+    var id_article = $("#id_article").val();
 
-    fetch(
-        'https://api.example/conversations/' + conversationUid + '/' + commentUid,
-        {
-            method: 'DELETE',
-        }
-    ).then((response) => {
+    console.log('tinycomments_delete_comment');
+    console.log(commentUid)
+    fetch('/article/delete_article_comments', {
+        method: 'POST',
+        body: JSON.stringify({ Id_article: parseInt(id_article, 10), Id_conversation: conversationUid, Id_comment: commentUid }),
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        },
+    })
+        .then((response) => {
         if (response.ok) {
             done({ canDelete: true });
         } else if (response.status === 403) {
@@ -159,6 +174,7 @@ const tinycomments_delete_comment = (req, done, fail) => {
 };
 
 const tinycomments_lookup = ({ conversationUid }, done, fail) => {
+    console.log('tinycomments_lookup');
     const lookup = async () => {
         var id_article = $("#id_article").val();
 
@@ -186,16 +202,16 @@ const tinycomments_lookup = ({ conversationUid }, done, fail) => {
                     createdAt: comment.created_at,
                     content: comment.comments,
                     modifiedAt: comment.modified_at,
-                    uid: comment.id_conversation,
+                    uid: comment.id_comment,
                     authorName: "test_User", 
-                    commentUid: comment.Id_comment,
+                    commentUid: comment.id_comment,
                 })),
             },
         };
     };
     lookup()
         .then((data) => {
-            console.log('Lookup success ' + conversationUid, data);
+            //console.log('Lookup success ' + conversationUid, data);
             done(data);
         })
         .catch((err) => {
@@ -259,6 +275,8 @@ function saveArticle() {
     //2. Embedded mode
     //https://www.tiny.cloud/docs/plugins/premium/comments/introduction_to_tiny_comments/
 
+    
+
     $.ajax({
         type: "POST",
         url: "/Article/SaveArticle",
@@ -288,9 +306,11 @@ function autoSaveArticle() {
     //2. Embedded mode
     //https://www.tiny.cloud/docs/plugins/premium/comments/introduction_to_tiny_comments/
 
+    console.log('auto save');
+
     $.ajax({
         type: "POST",
-        url: "/Article/AutoSaveArticle",
+        url: "/article/AutoSaveArticle",
         data: { content: editorContent, comments: comments, id: id_article },
         success: function (result) {
             if (result.success) {
@@ -379,6 +399,34 @@ function getArticleForm(formData, id_article) {
     document.getElementById('submitButton').addEventListener('click', function () {
         manualSaveArticle()
         form.submit();
-        alert('Article and form definition have been saved!');
+        confirm('Article and form definition have been saved!');
     });
+
 }
+function alarm() {
+    var confirm = confirm('Do you load data?');
+}
+
+$().ready(function () {
+
+    console.log(parseInt($("#id_article").val(), 10))    
+    $.ajax({
+        type: "POST",
+        url: "/article/getArticleTemp",
+        data: {
+            id: parseInt($("#id_article").val(), 10 )// hard coded for now
+        },
+        dataType: "json",
+        success: function (data) {
+            console.log('aaa', data);
+            if (data) {
+                if (confirm('Do you load data?')) {
+                    document.getElementById("comments-callback").value = data.content;
+                        
+                }
+            }
+        }
+    });   
+
+});
+

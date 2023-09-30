@@ -30,6 +30,7 @@ namespace ProjectTemplate.Controllers
         public JsonResult CreateNewArticle(int article_type)
         {
             int id = articleRepository.CreateNewArticle(article_type);
+           
             return Json(new { Id_article = id });
         }
 
@@ -44,10 +45,21 @@ namespace ProjectTemplate.Controllers
         public IActionResult AutoSaveArticle(string content, string comments, int id)
         {
             ArticleTemp article_temp = articleRepository.GetArticleTemp(id);
+            if (article_temp == null)
+            {
+                articleRepository.CreateNewArticleTemp(id);
+                article_temp = articleRepository.GetArticleTemp(id);
+            }
             article_temp.Content = content;
 
             articleRepository.UpdateArticleTemp(article_temp);
             return Json(new { success = true });
+        }
+
+        public IActionResult GetArticleTemp(int id)
+        {
+            ArticleTemp article_temp = articleRepository.GetArticleTemp(id);
+            return Json(article_temp);
         }
 
         public IActionResult SaveArticle(string content, string comments, int id)
@@ -56,6 +68,7 @@ namespace ProjectTemplate.Controllers
             article.Content = content;
 
             articleRepository.UpdateArticle(article);
+            articleRepository.DeleteArticleTemp(id);
             return Json(new { success = true });
         }
 
@@ -63,6 +76,7 @@ namespace ProjectTemplate.Controllers
         public IActionResult CreateArticleComments([FromBody] ArticleComments articleComment)
         {
             articleRepository.CreateArticleComments(articleComment);
+
             return Json(new { success = true });
         }
 

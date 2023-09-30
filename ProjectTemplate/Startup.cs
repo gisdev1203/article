@@ -62,13 +62,14 @@ namespace ProjectTemplate
                 endpoints.MapControllerRoute(name: "article_lookup_comments", pattern: "article/GetArticleComments", new { controller = "Article", action = "GetArticleComments", page_name = "article_lookup_comments" });
                 endpoints.MapControllerRoute(name: "article_edit_comments", pattern: "article/edit_article_comments", new { controller = "Article", action = "EditArticleComments", page_name = "article_edit_comments" });
                 endpoints.MapControllerRoute(name: "article_reply_comments", pattern: "article/reply_article_comments", new { controller = "Article", action = "ReplyArticleComments", page_name = "article_reply_comments" });
-
-
+                endpoints.MapControllerRoute(name: "article_autoSave", pattern: "article/AutoSaveArticle", new { controller = "Article", action = "AutoSaveArticle", page_name = "article_autoSave" });
+                endpoints.MapControllerRoute(name: "article_delete_comments", pattern: "article/delete_article_comments", new { controller = "Article", action = "DeleteArticleComments", page_name = "article_delete_comments" });
+                
+                endpoints.MapControllerRoute(name: "article_temp", pattern: "article/getArticleTemp", new { controller = "Article", action = "GetArticleTemp", page_name = "article_temp" });
 
                 endpoints.MapControllerRoute(name: "article_form_definition", pattern: "article/get_article_form_definition", new { controller = "Article", action = "GetArticleFormDefinition", page_name = "article_form_definition" });
                 endpoints.MapControllerRoute(name: "article_form_save_data", pattern: "article/save_form_data", new { controller = "Article", action = "SaveArticleForm", page_name = "article_form_save_data" });
                 endpoints.MapControllerRoute(name: "article_create_comments", pattern: "article/create_article_comments", new { controller = "Article", action = "CreateArticleComments", page_name = "article_create_comments" });
-                endpoints.MapControllerRoute(name: "article_delete_comments", pattern: "article/delete_article_comments", new { controller = "Article", action = "DeleteArticleComments", page_name = "article_delete_comments" });
 
                 endpoints.MapControllerRoute(name: "article_delete_conversation", pattern: "article/delete_article_conversation", new { controller = "Article", action = "DeleteArticleConversation", page_name = "article_delete_conversation" });
                 endpoints.MapControllerRoute(name: "article_delete_all_conversations", pattern: "article/delete_article_conversations", new { controller = "Article", action = "DeleteArticleConversations", page_name = "article_delete_all_conversations" });
