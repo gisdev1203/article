@@ -342,7 +342,7 @@ function cancel() {
     window.location.href = "/article/articles/";
 }
 
-function getArticleForm(formData, id_article, article_type) {
+function getArticleForm(formData, article_type) {
     var existingFormData = formData;
     $.ajax({
         type: "POST",
