@@ -230,7 +230,8 @@ tinymce.init({
                 if (data) {
                     $.confirm({
                         title: 'Alert',
-                        boxWidth: '450px',
+                        boxWidth: '500px',
+                        useBootstrap: false,
                         content: 'Do you recover unsaved article?',
                         icon: 'fa fa-warning',
                         animation: 'scale',
