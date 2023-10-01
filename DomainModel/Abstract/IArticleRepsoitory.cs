@@ -11,7 +11,7 @@ namespace DomainModel.Abstract
         List<Article> ListArticles(ArticleFilter filter);
         List<Article> GetArticle(int id);
         Article GetDataFromArticleTableLastOrDefault();
-        int CreateNewArticle(int article_type);
+        int CreateNewArticle(int article_type_id);
         List<ArticleForm> ListArticleForm(ArticleFormFilter filter);
         ArticleForm GetArticleFormById(ArticleFormFilter filter);
         void UpdateArticle(Article article);

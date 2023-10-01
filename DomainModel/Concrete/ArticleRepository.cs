@@ -62,10 +62,10 @@ namespace DomainModel.Concrete
         {
             dynamic parameters = new ExpandoObject();
             string sql = "SELECT id, type, form_definition FROM article_form";
-            if (!string.IsNullOrEmpty(filter.type))
+            if (filter.Id > 0)
             {
-                parameters.A = filter.type;
-                sql += " WHERE type = @A";
+                parameters.A = filter.Id;
+                sql += " WHERE id = @A";
             }
             return Query<ArticleForm>(sql, parameters);
         }

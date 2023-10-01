@@ -227,12 +227,10 @@ tinymce.init({
             },
             dataType: "json",
             success: function (data) {
-
-                console.log(data);
-
                 if (data) {
                     $.confirm({
                         title: 'Alert',
+                        boxWidth: '450px',
                         content: 'Do you recover unsaved article?',
                         icon: 'fa fa-warning',
                         animation: 'scale',
@@ -249,8 +247,6 @@ tinymce.init({
                                         },
                                         dataType: "json",
                                         success: function (data) {
-                                            console.log("delete:", data);
-                                            $.alert('A very critical action <strong>triggered!</strong>');
                                         }
                                     });
                                 }
@@ -258,12 +254,8 @@ tinymce.init({
                             confirm: {
                                 text: 'Yes, recover!',
                                 btnClass: 'btn-orange',
-                                action: function () {
-                                    //$.alert('A very critical action <strong>triggered!</strong>');
-                                    console.log("1", data);
+                                action: function () { 
                                     editor.setContent(data.content);
-                                    $("#comments-callback").val(1111111111111);
-                                    //document.getElementById("comments-callback").value = data.content;
                                 }
                             },
                         }
@@ -363,7 +355,7 @@ function getArticleForm(formData, id_article, article_type) {
         type: "POST",
         url: "/article/get_article_form_definition",
         data: {
-            type: 'sport' // hard coded for now
+            id: article_type
         },
         dataType: "json",
         success: function (data) {

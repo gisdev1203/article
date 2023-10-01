@@ -44,28 +44,46 @@
     <script type="text/javascript">
     
 $(document).ready(function () {
-    $("#createArticleBtn").click(function () {        
-        $.ajax({
-            type: "POST",
-            url: "/article/create_new_article",
-            data: {
-                article_type: 1, //hard coded for now
-            },
-            dataType: "json",
 
-            success: function (data) {
-                if (data.id_article) {
-                    // Redirect to the edit page of the newly created article.
-                    window.location.href = "/article/edit/" + data.id_article;
-                } else {
-                    alert("Failed to create a new article.");
-                }
-            },
-            error: function () {
-                alert("An error occurred while creating a new article.");
+    $("#createArticleBtn").click(function () {
+
+        $.confirm({
+            title: 'Please select article type.',
+            boxWidth: '340px',
+            useBootstrap: false,
+            content: '<select class="article-select" id = "article_type">  <option value="1" > Sports </option></select>',
+            icon: 'fa fa-warning',
+            animation: 'scale',
+            closeAnimation: 'zoom',
+            buttons: {                        
+                confirm: {
+                    text: 'OK',
+                    btnClass: 'btn-orange',
+                    action: function () {
+                                
+                        $.ajax({
+                            type: "POST",
+                            url: "/article/create_new_article",
+                            data: {
+                                article_type_id: parseInt($("#article_type").val(), 10),
+                            },
+                            dataType: "json",
+
+                            success: function (data) {
+                                if (data.id_article) {
+                                    window.location.href = "/article/edit/" + data.id_article;
+                                } else {
+                                    alert("Failed to create a new article.");
+                                }
+                            },
+                            error: function () {
+                                alert("An error occurred while creating a new article.");
+                            }
+                        });
+                    }
+                },
             }
-        });
-        
+        });        
     });
 });    
     </script>

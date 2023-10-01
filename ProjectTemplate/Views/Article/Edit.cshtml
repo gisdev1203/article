@@ -25,9 +25,7 @@
     @* for localezation of TinyMCE*@ 
     <script src="~/js/langs/fr_FR.js" > </script>
 
-    @* import queryConfirm library*@
-    <link rel="stylesheet" type="text/css" href="~/lib/jquery-confirm-v3.3.4/dist/jquery-confirm.min.css" />
-    <script src="~/lib/jquery-confirm-v3.3.4/dist/jquery-confirm.min.js"></script>
+   
     
 }
 
@@ -35,7 +33,7 @@
     {
 
     <input type="hidden" id="id_article" value="@Model.Articles.FirstOrDefault().Id" />
-    <input type="hidden" id="article_type" value = "sport" />
+    <input type="hidden" id="article_type" value="@Model.Articles.FirstOrDefault().Id_form" />
     <div id="parentdiv">
         <div id="tiny-ui" class="panel">
             <textarea id="comments-callback" style="width: 100%; height: 500px;">
@@ -113,7 +111,8 @@
                 window.location.href = "/article/articles/";
             }
              autoSaveArticleInterval(); // Initial call to autoSaveArticleCycle
-            getArticleForm(@formData, @id_article, $("#id_article").val());
+             var i
+            getArticleForm(@formData, @id_article, parseInt($("#article_type").val(), 10));
           });       
 
     </script>

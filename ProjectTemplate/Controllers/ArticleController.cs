@@ -27,9 +27,9 @@ namespace ProjectTemplate.Controllers
         }
 
         [HttpPost]
-        public JsonResult CreateNewArticle(int article_type)
+        public JsonResult CreateNewArticle(int article_type_id)
         {
-            int id = articleRepository.CreateNewArticle(article_type);
+            int id = articleRepository.CreateNewArticle(article_type_id);
            
             return Json(new { Id_article = id });
         }
@@ -142,9 +142,9 @@ namespace ProjectTemplate.Controllers
             return Json(new { success = result });
         }
 
-        public IActionResult GetArticleFormDefinition(string type)
+        public IActionResult GetArticleFormDefinition(int id)
         {
-            ArticleForm articleForms = articleRepository.ListArticleForm(new ArticleFormFilter { type = type }).FirstOrDefault();
+            ArticleForm articleForms = articleRepository.ListArticleForm(new ArticleFormFilter { Id= id }).FirstOrDefault();
 
             return Json(new
             {
