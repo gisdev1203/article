@@ -1,10 +1,1 @@
-﻿/////////////////////////////////
-//2023_10_01
-
-CREATE TABLE IF NOT EXISTS public.ident
-(
-    id integer NOT NULL DEFAULT nextval('ident_id_seq'::regclass),
-    "First_name" character varying COLLATE pg_catalog."default" NOT NULL,
-    "Last_name" character varying COLLATE pg_catalog."default" NOT NULL,
-    CONSTRAINT ident_pkey PRIMARY KEY (id)
-)
+﻿
