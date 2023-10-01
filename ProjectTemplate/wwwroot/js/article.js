@@ -291,13 +291,13 @@ function saveArticle() {
     var editorContent = tinymce.get('comments-callback').getContent();
     if (editorContent === "")
         return;
-    var comments = "";    
+    
     var id_article = $("#id_article").val();
 
     $.ajax({
         type: "POST",
         url: "/Article/SaveArticle",
-        data: { content: editorContent, comments: comments, id: id_article },
+        data: { content: editorContent, id: id_article },
         success: function (result) {
             if (!result.success) {
                 console.error("Failed to save content.");
@@ -312,14 +312,13 @@ function saveArticle() {
 function autoSaveArticle() {
     var editorContent = tinymce.get('comments-callback').getContent();
     if (editorContent === "")
-        return;
-    var comments = "";
+        return;   
     var id_article = $("#id_article").val();
 
     $.ajax({
         type: "POST",
         url: "/article/AutoSaveArticle",
-        data: { content: editorContent, comments: comments, id: id_article },
+        data: { content: editorContent, id: id_article },
         success: function (result) {
             if (!result.success) {                
                 console.error("Failed to save content.");
@@ -399,4 +398,5 @@ function getArticleForm(formData, id_article, article_type) {
         confirm('Article and form definition have been saved!');
     });
 }
+
 

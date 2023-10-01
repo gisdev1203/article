@@ -24,9 +24,6 @@
 
     @* for localezation of TinyMCE*@ 
     <script src="~/js/langs/fr_FR.js" > </script>
-
-   
-    
 }
 
 @section MainContent
@@ -109,8 +106,8 @@
          $(document).ready(function () {
             if (id_article == null) {
                 window.location.href = "/article/articles/";
-            }           
-             
+            }
+
             getArticleForm(@formData, @id_article, parseInt($("#article_type").val(), 10));
           });       
 

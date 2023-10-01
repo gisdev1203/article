@@ -42,7 +42,7 @@ namespace ProjectTemplate.Controllers
             return View("Edit", dto);
         }
 
-        public IActionResult AutoSaveArticle(string content, string comments, int id)
+        public IActionResult AutoSaveArticle(string content, int id)
         {
             ArticleTemp article_temp = articleRepository.GetArticleTemp(id);
             if (article_temp == null)
@@ -62,7 +62,7 @@ namespace ProjectTemplate.Controllers
             return Json(article_temp);
         }
 
-        public IActionResult SaveArticle(string content, string comments, int id)
+        public IActionResult SaveArticle(string content, int id)
         {
             Article article = articleRepository.ListArticles(new ArticleFilter { Id = id }).FirstOrDefault();
             article.Content = content;
