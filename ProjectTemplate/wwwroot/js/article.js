@@ -293,14 +293,17 @@ function saveArticle() {
         return;
     
     var id_article = $("#id_article").val();
+    var formio_data = $("#formio_data").val();
 
     $.ajax({
         type: "POST",
         url: "/Article/SaveArticle",
-        data: { content: editorContent, id: id_article },
+        data: { content: editorContent, formio_data: formio_data, id: id_article },
         success: function (result) {
             if (!result.success) {
                 console.error("Failed to save content.");
+            } else {
+                window.location.href = "/article/articles/";
             }
         },
         error: function () {
@@ -335,11 +338,6 @@ function autoSaveArticleInterval() {
     setTimeout(autoSaveArticleInterval, 1 * 60 * 1000);
 }
 
-
-function manualSaveArticle() {
-    saveArticle();
-}
-
 function cancel() {
     window.location.href = "/article/articles/";
 }
@@ -366,23 +364,8 @@ function getArticleForm(formData, id_article, article_type) {
                                 data: JSON.parse(existingFormData)
                             };
                         }
-                        form.on('submit', function (submission) {
-                            const formDataString = JSON.stringify(submission.data);
-                            $.ajax({
-                                type: 'POST',
-                                url: '/article/save_form_data',
-                                data: {
-                                    formData: formDataString,
-                                    id_article: id_article
-                                },
-                                dataType: 'json',
-                                success: function (response) {
-                                    window.location.href = "/article/articles/";
-                                },
-                                error: function (error) {
-                                    console.error('Error submitting form data:', error);
-                                }
-                            });
+                        createdForm.on('change', function (submission) {
+                            $("#formio_data").val(JSON.stringify(submission.data, null, 4))
                         });
                     })
                     .catch(function (error) {
@@ -391,12 +374,11 @@ function getArticleForm(formData, id_article, article_type) {
             }
         }
     });
-
-    document.getElementById('submitButton').addEventListener('click', function () {
-        manualSaveArticle()
-        form.submit();
-        confirm('Article and form definition have been saved!');
-    });
 }
+
+$("#submitButton").click(function () {
+    saveArticle();
+})
+
 
 

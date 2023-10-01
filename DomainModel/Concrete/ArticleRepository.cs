@@ -84,8 +84,9 @@ namespace DomainModel.Concrete
 
         public void UpdateArticle(Article article)
         {
-            string sql = "update article set content = @A where id = @B";
-            Execute(sql, new { A = article.Content, B = article.Id });
+            string sql = "update article set content = @A, form_data = @C::json where id = @B";
+
+            Execute(sql, new { A = article.Content, B = article.Id, C = article.Form_Data });
         }
 
         public void UpdateArticleForm(Article article)

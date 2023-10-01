@@ -62,10 +62,11 @@ namespace ProjectTemplate.Controllers
             return Json(article_temp);
         }
 
-        public IActionResult SaveArticle(string content, int id)
+        public IActionResult SaveArticle(string content, string formio_data, int id)
         {
             Article article = articleRepository.ListArticles(new ArticleFilter { Id = id }).FirstOrDefault();
             article.Content = content;
+            article.Form_Data = formio_data;
 
             articleRepository.UpdateArticle(article);
             articleRepository.DeleteArticleTemp(id);
