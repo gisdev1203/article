@@ -9,6 +9,7 @@
 @{
     var formData = @Html.Raw(JsonConvert.SerializeObject(Model.Articles.FirstOrDefault().Form_Data));
     var id_article = @Model.Articles.FirstOrDefault().Id;
+
 }
 
 @section HeaderContent
@@ -17,15 +18,24 @@
     <link rel="stylesheet" href="https://cdn.form.io/formiojs/formio.form.min.css" crossorigin="anonymous">
     <script src="https://cdn.tiny.cloud/1/ahb1scmmvpwca4zi20dek49m7401iz9kw8gvu6f9y258j1g6/tinymce/6/tinymce.min.js"
             referrerpolicy="origin"></script>
+    @* Alternate Trial Key: ahb1scmmvpwca4zi20dek49m7401iz9kw8gvu6f9y258j1g6 *@
+
     <script src="https://cdn.form.io/formiojs/formio.form.min.js" crossorigin="anonymous"></script>
 
-    @* Alternate Trial Key: j15q36jt8uynx9hihi6nmz602oru1uqbn99pm8ds0u864rrs *@
+    @* for localezation of TinyMCE*@ 
+    <script src="~/js/langs/fr_FR.js" > </script>
+
+    @* import queryConfirm library*@
+    <link rel="stylesheet" type="text/css" href="~/lib/jquery-confirm-v3.3.4/dist/jquery-confirm.min.css" />
+    <script src="~/lib/jquery-confirm-v3.3.4/dist/jquery-confirm.min.js"></script>
+    
 }
 
 @section MainContent
     {
 
     <input type="hidden" id="id_article" value="@Model.Articles.FirstOrDefault().Id" />
+    <input type="hidden" id="article_type" value = "sport" />
     <div id="parentdiv">
         <div id="tiny-ui" class="panel">
             <textarea id="comments-callback" style="width: 100%; height: 500px;">
@@ -96,11 +106,15 @@
     }
 
 @section JSFooterContent {
-    <script src="~/js/test.js"></script>
+    <script src="~/js/article.js"></script>
     <script>
          $(document).ready(function () {
-             autoSaveArticleInterval(); // Initial call to autoSaveArticleCycle    
-             getArticleForm(@formData, @id_article);
-          });
+            if (id_article == null) {
+                window.location.href = "/article/articles/";
+            }
+             autoSaveArticleInterval(); // Initial call to autoSaveArticleCycle
+            getArticleForm(@formData, @id_article, $("#id_article").val());
+          });       
+
     </script>
 }

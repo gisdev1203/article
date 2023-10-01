@@ -103,3 +103,7 @@
 #actiondiv button {
     margin: 0 10px;
 }
+
+.jconfirm-box {
+    width: 480px;
+}

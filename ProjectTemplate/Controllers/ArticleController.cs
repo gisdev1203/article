@@ -72,6 +72,12 @@ namespace ProjectTemplate.Controllers
             return Json(new { success = true });
         }
 
+        public IActionResult DeleteArticleTemp(int id)
+        {
+            articleRepository.DeleteArticleTemp(id);
+            return Json(new { success = true });
+        }
+
         [HttpPost]
         public IActionResult CreateArticleComments([FromBody] ArticleComments articleComment)
         {

@@ -66,6 +66,7 @@ namespace ProjectTemplate
                 endpoints.MapControllerRoute(name: "article_delete_comments", pattern: "article/delete_article_comments", new { controller = "Article", action = "DeleteArticleComments", page_name = "article_delete_comments" });
                 
                 endpoints.MapControllerRoute(name: "article_temp", pattern: "article/getArticleTemp", new { controller = "Article", action = "GetArticleTemp", page_name = "article_temp" });
+                endpoints.MapControllerRoute(name: "delete_article_temp", pattern: "article/deleteArticleTemp", new { controller = "Article", action = "DeleteArticleTemp", page_name = "delete_article_temp" });
 
                 endpoints.MapControllerRoute(name: "article_form_definition", pattern: "article/get_article_form_definition", new { controller = "Article", action = "GetArticleFormDefinition", page_name = "article_form_definition" });
                 endpoints.MapControllerRoute(name: "article_form_save_data", pattern: "article/save_form_data", new { controller = "Article", action = "SaveArticleForm", page_name = "article_form_save_data" });
