@@ -1,7 +1,7 @@
 ﻿namespace DomainModel.ObjectList
 {
-    public class UserCustom
+    public static class UserCustom
     {
-        public int GetId() { return 1; }
+        public static int GetId() { return 1; }
     }
 }
