@@ -343,9 +343,7 @@ function cancel() {
 }
 
 function getArticleForm(formData, id_article, article_type) {
-    let form;
     var existingFormData = formData;
-
     $.ajax({
         type: "POST",
         url: "/article/get_article_form_definition",
@@ -357,10 +355,8 @@ function getArticleForm(formData, id_article, article_type) {
             if (data.articleFormDefinition) {
                 Formio.createForm(document.getElementById('formio'), JSON.parse(data.articleFormDefinition))
                     .then(function (createdForm) {
-                        form = createdForm;
-
                         if (existingFormData) {
-                            form.submission = {
+                            createdForm.submission = {
                                 data: JSON.parse(existingFormData)
                             };
                         }
