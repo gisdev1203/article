@@ -109,9 +109,8 @@
          $(document).ready(function () {
             if (id_article == null) {
                 window.location.href = "/article/articles/";
-            }
-             autoSaveArticleInterval(); // Initial call to autoSaveArticleCycle
-             var i
+            }           
+             
             getArticleForm(@formData, @id_article, parseInt($("#article_type").val(), 10));
           });       
 

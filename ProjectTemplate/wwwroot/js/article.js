@@ -261,6 +261,7 @@ tinymce.init({
                         }
                     });
                 }
+                autoSaveArticleInterval(); // Initial call to autoSaveArticleCycle
             }
         });
         
@@ -297,9 +298,7 @@ function saveArticle() {
         url: "/Article/SaveArticle",
         data: { content: editorContent, comments: comments, id: id_article },
         success: function (result) {
-            if (result.success) {
-
-            } else {
+            if (!result.success) {
                 console.error("Failed to save content.");
             }
         },
@@ -321,9 +320,7 @@ function autoSaveArticle() {
         url: "/article/AutoSaveArticle",
         data: { content: editorContent, comments: comments, id: id_article },
         success: function (result) {
-            if (result.success) {                
-                console.error('success to save content.')
-            } else {
+            if (!result.success) {                
                 console.error("Failed to save content.");
             }
         },
@@ -359,10 +356,8 @@ function getArticleForm(formData, id_article, article_type) {
         },
         dataType: "json",
         success: function (data) {
-
             if (data.articleFormDefinition) {
                 Formio.createForm(document.getElementById('formio'), JSON.parse(data.articleFormDefinition))
-
                     .then(function (createdForm) {
                         form = createdForm;
 

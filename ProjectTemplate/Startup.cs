@@ -43,7 +43,7 @@ namespace ProjectTemplate
                  {
                      await context.Response.WriteAsync("Hello World!");
                  });
-             });*/
+             }); */
 
             app.UseRouting();
             app.UseStaticFiles();
