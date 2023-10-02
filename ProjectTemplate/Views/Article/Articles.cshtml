@@ -52,6 +52,7 @@
                 },
                 dataType: "json",
                 success: function (data) {
+                    console.log(data);
                     if (data) {
                         $.confirm({
                             title: 'Alert',
@@ -87,6 +88,8 @@
                                 },
                             }
                         });
+                    } else {
+                        window.location.href = "/article/edit/" + edit_id;
                     }
                 }
             });           
@@ -99,7 +102,7 @@
                     title: 'Please select article type.',
                     boxWidth: '340px',
                     useBootstrap: false,
-                    content: '<select class="article-select" id = "article_type">  <option value="1" > Sports </option></select>',
+                    content: '<select class="article-select" id = "article_type">  <option value="1"> Sports </option></select>',
                     icon: 'fa fa-warning',
                     animation: 'scale',
                     closeAnimation: 'zoom',
@@ -113,7 +116,8 @@
                                     type: "POST",
                                     url: "/article/create_new_article",
                                     data: {
-                                        article_type_id: parseInt($("#article_type").val(), 10),
+                                        article_type_id: parseInt($("#article_type").val(), 10)
+                                        
                                     },
                                     dataType: "json",
 

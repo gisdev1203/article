@@ -217,57 +217,6 @@ tinymce.init({
     tinycomments_delete_comment,
     tinycomments_lookup,
 
-    /* The following setup callback opens the comments sidebar when the editor loads */
-    /*init_instance_callback: function (editor) {
-        $.ajax({
-            type: "POST",
-            url: "/article/getArticleTemp",
-            data: {
-                id: parseInt($("#id_article").val(), 10)  // hard coded for now
-            },
-            dataType: "json",
-            success: function (data) {
-                if (data) {
-                    $.confirm({
-                        title: 'Alert',
-                        boxWidth: '500px',
-                        useBootstrap: false,
-                        content: 'Do you recover unsaved article?',
-                        icon: 'fa fa-warning',
-                        animation: 'scale',
-                        closeAnimation: 'zoom',
-                        buttons: {
-                            cancel: {
-                                text: "No delete the unsaved changes",
-                                action: function () {
-                                    $.ajax({
-                                        type: "POST",
-                                        url: "/article/deleteArticleTemp",
-                                        data: {
-                                            id: parseInt($("#id_article").val(), 10),
-                                        },
-                                        dataType: "json",
-                                        success: function (data) {
-                                        }
-                                    });
-                                }
-                            },
-                            confirm: {
-                                text: 'Yes, recover!',
-                                btnClass: 'btn-orange',
-                                action: function () { 
-                                    editor.setContent(data.content);
-                                }
-                            },
-                        }
-                    });
-                }
-                autoSaveArticleInterval(); // Initial call to autoSaveArticleCycle
-            }
-        });
-        
-        
-    },*/
     setup: (editor) => {
         editor.on('SkinLoaded', () => {
             editor.execCommand('ToggleSidebar', false, 'showcomments');

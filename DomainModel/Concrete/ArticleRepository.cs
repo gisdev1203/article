@@ -27,21 +27,25 @@ namespace DomainModel.Concrete
         public List<Article> ListArticles(ArticleFilter filter)
         {
             dynamic parameters = new ExpandoObject();
-            string sql = "SELECT id, name, content, form_data FROM article WHERE is_deleted = false";
+            string sql = "SELECT id, name, content, form_data, user_id FROM article WHERE is_deleted = false AND user_id = @B";
 
             if (filter.Id.HasValue)
             {
                 parameters.A = filter.Id.Value;
-                sql += " AND id = @A";
+                
+                sql += " AND id = @A ";
+                //sql += " AND id = @A ";
             }
+            parameters.B = filter.User_Id;
+
             return Query<Article>(sql, parameters);
         }
 
 
-        public List<Article> GetArticle(int id)
+        public List<Article> GetArticle(int id, int user_id)
         {
-            string sql = "SELECT id, name, content FROM article WHERE id = @A";
-            return Query<Article>(sql, new { A = id });
+            string sql = "SELECT id, name, content, user_id FROM article WHERE id = @A and user_id = @B";
+            return Query<Article>(sql, new { A = id, B = user_id });
         }
 
         public Article GetDataFromArticleTableLastOrDefault()
@@ -50,12 +54,12 @@ namespace DomainModel.Concrete
             return QueryFirstOrDefault<Article>(sql);
         }
 
-        public int CreateNewArticle(int article_type)
+        public int CreateNewArticle(int article_type, int user_id)
         {
             var newArticleName = "Article test";
             //TODO: We will change the article name later
-            string sql = "INSERT INTO article(name, is_deleted, id_form) VALUES(@A, false, @B) RETURNING Id";
-            return ExecuteScalar(sql, new { A = newArticleName, B = article_type });
+            string sql = "INSERT INTO article(name, is_deleted, id_form, user_id) VALUES(@A, false, @B, @C) RETURNING Id";
+            return ExecuteScalar(sql, new { A = newArticleName, B = article_type, C = user_id });
         }
 
         public List<ArticleForm> ListArticleForm(ArticleFormFilter filter)
@@ -92,49 +96,50 @@ namespace DomainModel.Concrete
 
         public void UpdateArticle(Article article)
         {
-            string sql = "update article set content = @A, form_data = @C::json where id = @B";
+            string sql = "update article set content = @A, form_data = @C::json where id = @B and user_id = @D";
 
-            Execute(sql, new { A = article.Content, B = article.Id, C = article.Form_Data });
+            Execute(sql, new { A = article.Content, B = article.Id, C = article.Form_Data, D = article.User_Id });
         }
 
         public void UpdateArticleForm(Article article)
         {
-            string sql = "update article set form_data = @A::json where id = @B";
-            Execute(sql, new { A = article.Form_Data, B = article.Id });
+            string sql = "update article set form_data = @A::json where id = @B and user_id = @C";
+            Execute(sql, new { A = article.Form_Data, B = article.Id, C = article.User_Id });
         }
 
-        public void CreateNewArticleTemp(int id_article)
+        public void CreateNewArticleTemp(int id_article, int user_id)
         {
-            string sql = "INSERT INTO article_temp(id_article, content) VALUES(@A, @B)";
-            Execute(sql, new { A = id_article, B = "" });
+            string sql = "INSERT INTO article_temp(id_article, content, user_id) VALUES(@A, @B, @C)";
+            Execute(sql, new { A = id_article, B = "", C = user_id });
         }
-        public bool DeleteArticleTemp(int id_article)
+        public bool DeleteArticleTemp(int id_article, int user_id)
         {
-            string sql = "delete from article_temp where id_article = @A";
+            string sql = "delete from article_temp where id_article = @A AND user_id = @B";
             Execute(sql, new
             {
-                A = id_article,                
+                A = id_article,  
+                B = user_id,
             });
 
             return true; //TODO: need to handle delete
         }
 
-        public ArticleTemp GetArticleTemp(int id)
+        public ArticleTemp GetArticleTemp(int id, int user_id)
         {
-            string sql = "SELECT id_article, content FROM article_temp WHERE id_article = @A";
-            return QueryFirstOrDefault<ArticleTemp>(sql, new { A = id });
+            string sql = "SELECT id_article, content, user_id FROM article_temp WHERE id_article = @A AND user_id = @B";
+            return QueryFirstOrDefault<ArticleTemp>(sql, new { A = id, B = user_id });
         }
 
         public void UpdateArticleTemp(ArticleTemp articleTemp)
         {
-            string sql = "update article_temp set content = @A where id_article = @B";
-            Execute(sql, new { A = articleTemp.Content, B = articleTemp.Id_article });
+            string sql = "update article_temp set content = @A where id_article = @B and user_id = @C";
+            Execute(sql, new { A = articleTemp.Content, B = articleTemp.Id_article, C = articleTemp.User_Id });
         }
 
         public int CreateArticleComments(ArticleComments articleComments)
         {
-            string sql = "INSERT INTO article_comments(id_article, comments, created_at, id_conversation, id_comment, modified_at) " +
-                            "VALUES(@A, @B, @C, @D, @E, @F) RETURNING Id";
+            string sql = "INSERT INTO article_comments(id_article, comments, created_at, id_conversation, id_comment, modified_at, user_id) " +
+                            "VALUES(@A, @B, @C, @D, @E, @F, @G) RETURNING Id";
             return Execute(sql, new 
             { 
                 A = articleComments.Id_article, 
@@ -142,19 +147,22 @@ namespace DomainModel.Concrete
                 C = articleComments.Created_at,
                 D = articleComments.Id_conversation, 
                 E = articleComments.Id_comment,
-                F = articleComments.Modified_at
+                F = articleComments.Modified_at,
+                G = articleComments.User_Id,
             });
         }
 
         public List<ArticleComments> ListArticleComments(ArticleCommentsFilter filter)
         {
             dynamic parameters = new ExpandoObject();
-            string sql = "SELECT id, id_article, comments, created_at, id_conversation, id_comment, modified_at FROM article_comments";
+            string sql = "SELECT id, id_article, comments, created_at, id_conversation, id_comment, modified_at, user_id FROM article_comments";
             if (filter.Id != null)
             {
                 parameters.A = filter.Id;
                 parameters.B = filter.Id_conversation;
-                sql += " WHERE id_article = @A and id_conversation  = @B ORDER BY id";
+                parameters.C = filter.User_Id;
+
+                sql += " WHERE id_article = @A and id_conversation  = @B and user_id = @C ORDER BY id";
             }
             return Query<ArticleComments>(sql, parameters);
         }
@@ -170,14 +178,13 @@ namespace DomainModel.Concrete
                 parameters.C = articleComments.Id_conversation;                
                 parameters.E = articleComments.Modified_at;
                 parameters.D = articleComments.Id_comment;
+                parameters.F = articleComments.User_Id;
 
                 if (articleComments.Id_comment == null)
-                {
-                    
-                    sql += "@A, modified_at = @E WHERE id_article = @B and  id_conversation = @C and  id_comment is NULL";
-
+                {                    
+                    sql += "@A, modified_at = @E WHERE id_article = @B and  id_conversation = @C and  user_id = @F and id_comment is NULL";
                 }
-                else sql += "@A, modified_at = @E WHERE id_article = @B and  id_conversation = @C and  id_comment = @D";
+                else sql += "@A, modified_at = @E WHERE id_article = @B and  id_conversation = @C and  id_comment = @D user_id = @F";
             }
 
             return Execute(sql, parameters);
@@ -195,23 +202,24 @@ namespace DomainModel.Concrete
                 parameters.D = articleComments.Id_conversation;
                 parameters.E = articleComments.Id_comment;
                 parameters.F = articleComments.Modified_at;
-                
+                parameters.G = articleComments.User_Id;                
             }
 
-            string sql = "INSERT INTO article_comments(id_article, comments, created_at, id_conversation, id_comment, modified_at) " +
-                            "VALUES(@A, @B, @C, @D, @E, @F) RETURNING Id";
+            string sql = "INSERT INTO article_comments(id_article, comments, created_at, id_conversation, id_comment, modified_at, user_id) " +
+                            "VALUES(@A, @B, @C, @D, @E, @F, @G) RETURNING Id";
 
             return Execute(sql, parameters);
         }
 
         public bool DeleteArticleComments(ArticleCommentsFilter articleCommentsFilter)
         {
-            string sql = "delete from article_comments where id_article = @A and id_conversation = @B and id_comment = @C";
+            string sql = "delete from article_comments where id_article = @A and id_conversation = @B and id_comment = @C and user_id = @D";
             Execute(sql, new
             {
                 A = articleCommentsFilter.Id,
                 B = articleCommentsFilter.Id_conversation,
-                C = articleCommentsFilter.Id_comment
+                C = articleCommentsFilter.Id_comment,
+                D = articleCommentsFilter.User_Id
             });
 
             return true; //TODO: need to handle delete
@@ -219,21 +227,23 @@ namespace DomainModel.Concrete
 
         public bool DeleteArticleConversation(ArticleCommentsFilter articleCommentsFilter)
         {
-            string sql = "delete from article_comments where id_article = @A and id_conversation = @B";
+            string sql = "delete from article_comments where id_article = @A and id_conversation = @B and user_id = @C";
             Execute(sql, new
             {
                 A = articleCommentsFilter.Id,
-                B = articleCommentsFilter.Id_conversation
+                B = articleCommentsFilter.Id_conversation,
+                C = articleCommentsFilter.User_Id,
             });
             return true; //TODO: need to handle delete
         }
 
         public bool DeleteArticleConversations(ArticleCommentsFilter articleCommentsFilter)
         {
-            string sql = "delete from article_comments where id_article = @A";
+            string sql = "delete from article_comments where id_article = @A and user_id = @B";
             Execute(sql, new
             {
-                A = articleCommentsFilter.Id
+                A = articleCommentsFilter.Id,
+                B = articleCommentsFilter.User_Id,
             });
             return true; //TODO: need to handle delete
         }

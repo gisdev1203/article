@@ -21,8 +21,9 @@ namespace ProjectTemplate.Controllers
         // GET: ArticleController
         public IActionResult Articles()
         {
+            int user_id = UserCustom.GetId();
             ArticleDTO dto = new ArticleDTO();
-            dto.Articles = articleRepository.ListArticles(new ArticleFilter { });
+            dto.Articles = articleRepository.ListArticles(new ArticleFilter { User_Id = user_id});
             dto.ArticleType = articleRepository.GetAllArticleType();
             return View("Articles", dto);
         }
@@ -30,27 +31,30 @@ namespace ProjectTemplate.Controllers
         [HttpPost]
         public JsonResult CreateNewArticle(int article_type_id)
         {
-            int id = articleRepository.CreateNewArticle(article_type_id);
-           
+            int user_id = UserCustom.GetId();
+            int id = articleRepository.CreateNewArticle(article_type_id, user_id);           
             return Json(new { Id_article = id });
         }
 
         // GET: ArticleController/Edit/5
         public IActionResult EditArticle(int id)
         {
+            int user_id = UserCustom.GetId();
             ArticleDTO dto = new ArticleDTO();
-            dto.Articles = articleRepository.ListArticles(new ArticleFilter { Id = id });
-            dto.ArticleTemp = articleRepository.GetArticleTemp(id);
+            dto.Articles = articleRepository.ListArticles(new ArticleFilter { Id = id, User_Id = user_id });
+            dto.ArticleTemp = articleRepository.GetArticleTemp(id, user_id);
             return View("Edit", dto);
         }
 
         public IActionResult AutoSaveArticle(string content, int id)
         {
-            ArticleTemp article_temp = articleRepository.GetArticleTemp(id);
+            int user_id = UserCustom.GetId();
+            ArticleTemp article_temp = articleRepository.GetArticleTemp(id, user_id);
+
             if (article_temp == null)
             {
-                articleRepository.CreateNewArticleTemp(id);
-                article_temp = articleRepository.GetArticleTemp(id);
+                articleRepository.CreateNewArticleTemp(id, user_id);
+                article_temp = articleRepository.GetArticleTemp(id, user_id);
             }
             article_temp.Content = content;
 
@@ -60,30 +64,35 @@ namespace ProjectTemplate.Controllers
 
         public IActionResult GetArticleTemp(int id)
         {
-            ArticleTemp article_temp = articleRepository.GetArticleTemp(id);
+            int user_id = UserCustom.GetId();
+            ArticleTemp article_temp = articleRepository.GetArticleTemp(id, user_id);
             return Json(article_temp);
         }
 
         public IActionResult SaveArticle(string content, string formio_data, int id)
         {
-            Article article = articleRepository.ListArticles(new ArticleFilter { Id = id }).FirstOrDefault();
+            int user_id = UserCustom.GetId();
+            Article article = articleRepository.ListArticles(new ArticleFilter { Id = id, User_Id = user_id }).FirstOrDefault();
             article.Content = content;
             article.Form_Data = formio_data;
 
             articleRepository.UpdateArticle(article);
-            articleRepository.DeleteArticleTemp(id);
+            articleRepository.DeleteArticleTemp(id, user_id);
             return Json(new { success = true });
         }
 
         public IActionResult DeleteArticleTemp(int id)
         {
-            articleRepository.DeleteArticleTemp(id);
+            int user_id = UserCustom.GetId();
+            articleRepository.DeleteArticleTemp(id, user_id);
             return Json(new { success = true });
         }
 
         [HttpPost]
         public IActionResult CreateArticleComments([FromBody] ArticleComments articleComment)
         {
+            int user_id = UserCustom.GetId();
+            articleComment.User_Id = user_id;
             articleRepository.CreateArticleComments(articleComment);
 
             return Json(new { success = true });
@@ -92,16 +101,19 @@ namespace ProjectTemplate.Controllers
         [HttpPost]
         public JsonResult GetArticleComments([FromBody] ArticleComments articleComment)
         {
+            int user_id = UserCustom.GetId();
             var id_article = articleComment.Id_article;
             var id_conversation = articleComment.Id_conversation;
 
-            List<ArticleComments> article_comments = articleRepository.ListArticleComments(new ArticleCommentsFilter { Id = id_article, Id_conversation = id_conversation });
+            List<ArticleComments> article_comments = articleRepository.ListArticleComments(new ArticleCommentsFilter { Id = id_article, Id_conversation = id_conversation, User_Id = user_id });
             return Json(article_comments);
         }
 
         [HttpPost]
         public IActionResult EditArticleComments([FromBody] ArticleComments articleComment)
         {
+            int user_id = UserCustom.GetId();
+            articleComment.User_Id=user_id;
             articleRepository.EditArticleComments(articleComment);
             return Json(new { success = true });
         }
@@ -109,6 +121,8 @@ namespace ProjectTemplate.Controllers
         [HttpPost]
         public IActionResult ReplyArticleComments([FromBody] ArticleComments articleComment)
         {
+            int user_id = UserCustom.GetId();
+            articleComment.User_Id = user_id;
             articleRepository.ReplyArticleComments(articleComment);
 
             return Json(new { success = true });
@@ -117,11 +131,13 @@ namespace ProjectTemplate.Controllers
         [HttpPost]
         public IActionResult DeleteArticleComments([FromBody] ArticleComments articleComment)
         {
+            int user_id = UserCustom.GetId();
             bool result = articleRepository.DeleteArticleComments(new ArticleCommentsFilter
             {
                 Id = articleComment.Id_article,
                 Id_conversation = articleComment.Id_conversation,
-                Id_comment = articleComment.Id_comment
+                Id_comment = articleComment.Id_comment,
+                User_Id = user_id
             });
             return Json(new { success = result });
         }
@@ -159,7 +175,8 @@ namespace ProjectTemplate.Controllers
 
         public IActionResult SaveArticleForm(int id_article, string formData)
         {
-            Article article = articleRepository.ListArticles(new ArticleFilter { Id = id_article }).FirstOrDefault();
+            int user_id = UserCustom.GetId();
+            Article article = articleRepository.ListArticles(new ArticleFilter { Id = id_article, User_Id = user_id }).FirstOrDefault();
             article.Form_Data = formData;
             articleRepository.UpdateArticleForm(article);
             return Json(new { success = true });

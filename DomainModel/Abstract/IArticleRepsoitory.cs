@@ -9,18 +9,18 @@ namespace DomainModel.Abstract
     {
         List<TestObject> GetDataFromTestTable(int id);
         List<Article> ListArticles(ArticleFilter filter);
-        List<Article> GetArticle(int id);
+        List<Article> GetArticle(int id, int user_id);
         Article GetDataFromArticleTableLastOrDefault();
-        int CreateNewArticle(int article_type_id);
+        int CreateNewArticle(int article_type_id, int user_id);
         List<ArticleForm> ListArticleForm(ArticleFormFilter filter);
         List<ArticleForm> GetAllArticleType();
         ArticleForm GetArticleFormById(ArticleFormFilter filter);
         void UpdateArticle(Article article);
         void UpdateArticleForm(Article article);
-        ArticleTemp GetArticleTemp(int id);
+        ArticleTemp GetArticleTemp(int id, int user_id);
         void UpdateArticleTemp(ArticleTemp articleTemp);
-        void CreateNewArticleTemp(int id_article);
-        bool DeleteArticleTemp(int id_article);
+        void CreateNewArticleTemp(int id_article, int user_id);
+        bool DeleteArticleTemp(int id_article, int user_id);
 
         int CreateArticleComments(ArticleComments articleComments);
         int EditArticleComments(ArticleComments articleComments);

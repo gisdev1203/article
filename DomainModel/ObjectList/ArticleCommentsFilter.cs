@@ -5,5 +5,6 @@
         public int? Id { get; set; }
         public string Id_conversation { get; set;}
         public string Id_comment { get; set; }
+        public int User_Id { get; set; }
     }
 }

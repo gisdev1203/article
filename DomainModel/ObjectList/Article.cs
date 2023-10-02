@@ -8,5 +8,6 @@
         public bool Is_Deleted { get; set; }
         public int Id_form { get; set; }
         public string Form_Data { get; set; }
+        public int User_Id { get; set; }
     }
 }
