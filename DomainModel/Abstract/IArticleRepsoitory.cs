@@ -13,6 +13,7 @@ namespace DomainModel.Abstract
         Article GetDataFromArticleTableLastOrDefault();
         int CreateNewArticle(int article_type_id);
         List<ArticleForm> ListArticleForm(ArticleFormFilter filter);
+        List<ArticleForm> GetAllArticleType();
         ArticleForm GetArticleFormById(ArticleFormFilter filter);
         void UpdateArticle(Article article);
         void UpdateArticleForm(Article article);
@@ -28,5 +29,6 @@ namespace DomainModel.Abstract
         bool DeleteArticleComments(ArticleCommentsFilter articleComments);
         bool DeleteArticleConversation(ArticleCommentsFilter articleCommentsFilter);
         bool DeleteArticleConversations(ArticleCommentsFilter articleCommentsFilter);
+         
     }
 }

@@ -8,5 +8,6 @@ namespace ProjectTemplate.PresentationModel
         public List<Article> Articles { get; set; } = new List<Article>();
         public Article Article { get; set; }
         public ArticleTemp ArticleTemp { get; set; }
+        public List<ArticleForm> ArticleType { get; set; }
     }
 }

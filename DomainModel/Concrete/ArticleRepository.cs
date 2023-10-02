@@ -70,6 +70,7 @@ namespace DomainModel.Concrete
             return Query<ArticleForm>(sql, parameters);
         }
 
+
         public ArticleForm GetArticleFormById(ArticleFormFilter filter)
         {
             dynamic parameters = new ExpandoObject();
@@ -80,6 +81,13 @@ namespace DomainModel.Concrete
                 sql += " WHERE id = @A";
             }
             return QueryFirstOrDefault<ArticleForm>(sql, parameters);
+        }
+
+        public List<ArticleForm> GetAllArticleType()
+        {
+            dynamic parameters = new ExpandoObject();
+            string sql = "SELECT id, type FROM article_form";
+            return Query<ArticleForm>(sql, parameters);
         }
 
         public void UpdateArticle(Article article)

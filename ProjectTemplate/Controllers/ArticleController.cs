@@ -23,6 +23,7 @@ namespace ProjectTemplate.Controllers
         {
             ArticleDTO dto = new ArticleDTO();
             dto.Articles = articleRepository.ListArticles(new ArticleFilter { });
+            dto.ArticleType = articleRepository.GetAllArticleType();
             return View("Articles", dto);
         }
 
@@ -39,6 +40,7 @@ namespace ProjectTemplate.Controllers
         {
             ArticleDTO dto = new ArticleDTO();
             dto.Articles = articleRepository.ListArticles(new ArticleFilter { Id = id });
+            dto.ArticleTemp = articleRepository.GetArticleTemp(id);
             return View("Edit", dto);
         }
 
@@ -159,7 +161,6 @@ namespace ProjectTemplate.Controllers
         {
             Article article = articleRepository.ListArticles(new ArticleFilter { Id = id_article }).FirstOrDefault();
             article.Form_Data = formData;
-
             articleRepository.UpdateArticleForm(article);
             return Json(new { success = true });
         }

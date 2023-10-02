@@ -31,6 +31,8 @@
                             @item.Name
                         </td>
                         <td>
+                            <button id="edit_btn@(item.Id)" onclick="editButton_click(@(item.Id))">Edit</button>
+
                             <a href="/article/edit/@(item.Id)">Edit</a>
                         </td>
                     </tr>
@@ -42,49 +44,97 @@
 
 @section JSFooterContent {
     <script type="text/javascript">
-    
-$(document).ready(function () {
-
-    $("#createArticleBtn").click(function () {
-
-        $.confirm({
-            title: 'Please select article type.',
-            boxWidth: '340px',
-            useBootstrap: false,
-            content: '<select class="article-select" id = "article_type">  <option value="1" > Sports </option></select>',
-            icon: 'fa fa-warning',
-            animation: 'scale',
-            closeAnimation: 'zoom',
-            buttons: {                        
-                confirm: {
-                    text: 'OK',
-                    btnClass: 'btn-orange',
-                    action: function () {
-                                
-                        $.ajax({
-                            type: "POST",
-                            url: "/article/create_new_article",
-                            data: {
-                                article_type_id: parseInt($("#article_type").val(), 10),
-                            },
-                            dataType: "json",
-
-                            success: function (data) {
-                                if (data.id_article) {
-                                    window.location.href = "/article/edit/" + data.id_article;
-                                } else {
-                                    alert("Failed to create a new article.");
-                                }
-                            },
-                            error: function () {
-                                alert("An error occurred while creating a new article.");
+        function editButton_click(edit_id) {
+            console.log(edit_id);
+            $.ajax({
+                type: "POST",
+                url: "/article/getArticleTemp",
+                data: {
+                    id: parseInt(edit_id, 10)  // hard coded for now
+                },
+                dataType: "json",
+                success: function (data) {
+                    if (data) {
+                        $.confirm({
+                            title: 'Alert',
+                            boxWidth: '500px',
+                            useBootstrap: false,
+                            content: 'Do you recover unsaved article?',
+                            icon: 'fa fa-warning',
+                            animation: 'scale',
+                            closeAnimation: 'zoom',
+                            buttons: {
+                                cancel: {
+                                    text: "No delete the unsaved changes",
+                                    action: function () {
+                                        $.ajax({
+                                            type: "POST",
+                                            url: "/article/deleteArticleTemp",
+                                            data: {
+                                                id: parseInt(edit_id, 10),
+                                            },
+                                            dataType: "json",
+                                            success: function (data) {
+                                                window.location.href = "/article/edit/" + edit_id;
+                                            }
+                                        });
+                                    }
+                                },
+                                confirm: {
+                                    text: 'Yes, recover!',
+                                    btnClass: 'btn-orange',
+                                    action: function () {
+                                        window.location.href = "/article/edit/" + edit_id;
+                                    }
+                                },
                             }
                         });
                     }
-                },
-            }
-        });        
-    });
-});    
+                }
+            });           
+        }
+
+        $(document).ready(function () {      
+    
+            $("#createArticleBtn").click(function () {
+                $.confirm({
+                    title: 'Please select article type.',
+                    boxWidth: '340px',
+                    useBootstrap: false,
+                    content: '<select class="article-select" id = "article_type">  <option value="1" > Sports </option></select>',
+                    icon: 'fa fa-warning',
+                    animation: 'scale',
+                    closeAnimation: 'zoom',
+                    buttons: {                        
+                        confirm: {
+                            text: 'OK',
+                            btnClass: 'btn-orange',
+                            action: function () {
+                                
+                                $.ajax({
+                                    type: "POST",
+                                    url: "/article/create_new_article",
+                                    data: {
+                                        article_type_id: parseInt($("#article_type").val(), 10),
+                                    },
+                                    dataType: "json",
+
+                                    success: function (data) {
+                                        if (data.id_article) {
+                                            window.location.href = "/article/edit/" + data.id_article;
+                                        } else {
+                                            alert("Failed to create a new article.");
+                                        }
+                                    },
+                                    error: function () {
+                                        alert("An error occurred while creating a new article.");
+                                    }
+                                });
+                            }
+                        },
+                    }
+                });        
+            });
+        });    
     </script>
 }

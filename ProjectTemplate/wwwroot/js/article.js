@@ -218,7 +218,7 @@ tinymce.init({
     tinycomments_lookup,
 
     /* The following setup callback opens the comments sidebar when the editor loads */
-    init_instance_callback: function (editor) {
+    /*init_instance_callback: function (editor) {
         $.ajax({
             type: "POST",
             url: "/article/getArticleTemp",
@@ -267,7 +267,7 @@ tinymce.init({
         });
         
         
-    },
+    },*/
     setup: (editor) => {
         editor.on('SkinLoaded', () => {
             editor.execCommand('ToggleSidebar', false, 'showcomments');
