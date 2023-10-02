@@ -3,6 +3,7 @@
  * (must call "done" or "fail") *
  ********************************/
 
+
 const tinycomments_create = (req, done, fail) => {
     const { content, createdAt } = req;
     var id_article = $("#id_article").val();
@@ -111,17 +112,17 @@ const tinycomments_delete = (req, done, fail) => {
 };
 
 const tinycomments_delete_all = (_req, done, fail) => {
-    fetch('https://api.example/conversations', {
-        method: 'DELETE',
-    }).then((response) => {
-        if (response.ok) {
-            done({ canDelete: true });
-        } else if (response.status === 403) {
-            done({ canDelete: false });
-        } else {
-            fail(new Error('Something has gone wrong...'));
-        }
-    });
+    //fetch('https://api.example/conversations', {
+    //    method: 'DELETE',
+    //}).then((response) => {
+    //    if (response.ok) {
+    //        done({ canDelete: true });
+    //    } else if (response.status === 403) {
+    //        done({ canDelete: false });
+    //    } else {
+    //        fail(new Error('Something has gone wrong...'));
+    //    }
+    //});
 };
 
 const tinycomments_delete_comment = (req, done, fail) => {
@@ -216,6 +217,58 @@ tinymce.init({
     tinycomments_delete_all,
     tinycomments_delete_comment,
     tinycomments_lookup,
+    /* The following setup callback opens the comments sidebar when the editor loads */
+    init_instance_callback: function (editor) {
+        $.ajax({
+            type: "POST",
+            url: "/article/getArticleTemp",
+            data: {
+                id: parseInt($("#id_article").val(), 10)  // hard coded for now
+            },
+            dataType: "json",
+            success: function (data) {
+                if (data) {
+                    $.confirm({
+                        title: 'Alert',
+                        boxWidth: '500px',
+                        useBootstrap: false,
+                        content: 'Do you recover unsaved article?',
+                        icon: 'fa fa-warning',
+                        animation: 'scale',
+                        closeAnimation: 'zoom',
+                        buttons: {
+                            cancel: {
+                                text: "No delete the unsaved changes",
+                                action: function () {
+                                    $.ajax({
+                                        type: "POST",
+                                        url: "/article/deleteArticleTemp",
+                                        data: {
+                                            id: parseInt($("#id_article").val(), 10),
+                                        },
+                                        dataType: "json",
+                                        success: function (data) {
+                                            autoSaveArticleInterval(); // Initial call to autoSaveArticleCycle
+                                        }
+                                    });
+                                }
+                            },
+                            confirm: {
+                                text: 'Yes, recover!',
+                                btnClass: 'btn-orange',
+                                action: function () {
+                                    editor.setContent(data.content);
+                                    autoSaveArticleInterval(); // Initial call to autoSaveArticleCycle
+                                }
+                            },
+                        }
+                    });
+                } else {
+                    autoSaveArticleInterval(); // Initial call to autoSaveArticleCycle
+                }               
+            }
+        });
+    },
 
     setup: (editor) => {
         editor.on('SkinLoaded', () => {
@@ -238,8 +291,6 @@ function generateUUID() {
 
 function saveArticle() {
     var editorContent = tinymce.get('comments-callback').getContent();
-    if (editorContent === "")
-        return;
     
     var id_article = $("#id_article").val();
     var formio_data = $("#formio_data").val();

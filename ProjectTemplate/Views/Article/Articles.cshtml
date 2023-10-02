@@ -42,57 +42,8 @@
 
 @section JSFooterContent {
     <script type="text/javascript">
-        function editButton_click(edit_id) {
-            console.log(edit_id);
-            $.ajax({
-                type: "POST",
-                url: "/article/getArticleTemp",
-                data: {
-                    id: parseInt(edit_id, 10)  // hard coded for now
-                },
-                dataType: "json",
-                success: function (data) {
-                    console.log(data);
-                    if (data) {
-                        $.confirm({
-                            title: 'Alert',
-                            boxWidth: '500px',
-                            useBootstrap: false,
-                            content: 'Do you recover unsaved article?',
-                            icon: 'fa fa-warning',
-                            animation: 'scale',
-                            closeAnimation: 'zoom',
-                            buttons: {
-                                cancel: {
-                                    text: "No delete the unsaved changes",
-                                    action: function () {
-                                        $.ajax({
-                                            type: "POST",
-                                            url: "/article/deleteArticleTemp",
-                                            data: {
-                                                id: parseInt(edit_id, 10),
-                                            },
-                                            dataType: "json",
-                                            success: function (data) {
-                                                window.location.href = "/article/edit/" + edit_id;
-                                            }
-                                        });
-                                    }
-                                },
-                                confirm: {
-                                    text: 'Yes, recover!',
-                                    btnClass: 'btn-orange',
-                                    action: function () {
-                                        window.location.href = "/article/edit/" + edit_id;
-                                    }
-                                },
-                            }
-                        });
-                    } else {
-                        window.location.href = "/article/edit/" + edit_id;
-                    }
-                }
-            });           
+        function editButton_click(edit_id) {            
+            window.location.href = "/article/edit/" + edit_id;               
         }
 
         $(document).ready(function () {      
@@ -116,8 +67,7 @@
                                     type: "POST",
                                     url: "/article/create_new_article",
                                     data: {
-                                        article_type_id: parseInt($("#article_type").val(), 10)
-                                        
+                                        article_type_id: parseInt($("#article_type").val(), 10)                                        
                                     },
                                     dataType: "json",
 

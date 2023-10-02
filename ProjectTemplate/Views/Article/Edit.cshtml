@@ -11,8 +11,8 @@
     var id_article = @Model.Articles.FirstOrDefault().Id;
     var article_content = @Html.Raw(Model.Articles.FirstOrDefault().Content); 
 
-    if (Model.ArticleTemp != null)    
-        article_content = @Html.Raw(Model.ArticleTemp.Content);
+    // if (Model.ArticleTemp != null)    
+    //     article_content = @Html.Raw(Model.ArticleTemp.Content);
 }
 
 @section HeaderContent
@@ -105,12 +105,10 @@
 @section JSFooterContent {
     <script src="~/js/article.js"></script>
     <script>
-         $(document).ready(function () {
-
-            if (id_article == null) {
+         $(document).ready(function () {             
+            if (@id_article == null) {
                 window.location.href = "/article/articles/";
             }
-            autoSaveArticleInterval();
             getArticleForm(@formData, parseInt($("#article_type").val(), 10));
           });
 
