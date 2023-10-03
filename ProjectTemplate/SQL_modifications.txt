@@ -1,3 +1,10 @@
 ﻿ALTER TABLE article ADD COLUMN user_id int4;
 ALTER TABLE article_temp ADD COLUMN user_id int4;
 ALTER TABLE article_comments ADD COLUMN user_id int4;
+
+
+ALTER TABLE ident
+RENAME COLUMN First_name TO first_name;
+
+ALTER TABLE ident
+RENAME COLUMN Last_name TO last_name;
