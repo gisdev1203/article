@@ -7,6 +7,8 @@ namespace DomainModel.Abstract
 {
     public interface IArticleRepository
     {
+        List<UserCustom> GetUserDataList();
+        UserCustom GetUserCustom(int id);
         List<TestObject> GetDataFromTestTable(int id);
         List<Article> ListArticles(ArticleFilter filter);
         List<Article> GetArticle(int id, int user_id);
@@ -21,7 +23,6 @@ namespace DomainModel.Abstract
         void UpdateArticleTemp(ArticleTemp articleTemp);
         void CreateNewArticleTemp(int id_article, int user_id);
         bool DeleteArticleTemp(int id_article, int user_id);
-
         int CreateArticleComments(ArticleComments articleComments);
         int EditArticleComments(ArticleComments articleComments);
         int ReplyArticleComments(ArticleComments articleComments);
@@ -29,6 +30,5 @@ namespace DomainModel.Abstract
         bool DeleteArticleComments(ArticleCommentsFilter articleComments);
         bool DeleteArticleConversation(ArticleCommentsFilter articleCommentsFilter);
         bool DeleteArticleConversations(ArticleCommentsFilter articleCommentsFilter);
-         
     }
 }

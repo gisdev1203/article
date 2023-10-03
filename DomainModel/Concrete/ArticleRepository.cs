@@ -13,6 +13,7 @@ using Npgsql;
 using NpgsqlTypes;
 using static System.Net.WebRequestMethods;
 using System.Reflection.Metadata;
+using System.Security.Cryptography;
 
 namespace DomainModel.Concrete
 {
@@ -246,6 +247,20 @@ namespace DomainModel.Concrete
                 B = articleCommentsFilter.User_Id,
             });
             return true; //TODO: need to handle delete
+        }
+
+
+        public UserCustom GetUserCustom(int id)
+        {
+            string sql = "SELECT id, first_name, last_name FROM ident where id = @A";
+            return QueryFirstOrDefault<UserCustom>(sql, new { A = id });
+        }
+
+        public List<UserCustom> GetUserDataList()
+        {
+            dynamic parameters = new ExpandoObject();
+            string sql = "select id, first_name, last_name from ident";
+            return Query<UserCustom>(sql, parameters);            
         }
     }
 }

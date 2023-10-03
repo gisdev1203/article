@@ -58,6 +58,8 @@ namespace ProjectTemplate
                 endpoints.MapControllerRoute(name: "test_page", pattern: "page_test", new { controller = "Home", action = "PageTest", page_name = "test_page" });
 
                 //Ajax routes
+                endpoints.MapControllerRoute(name: "get_user_data", pattern: "article/getUserDataList", new { controller = "Article", action = "GetUserDataList", page_name = "get_user_data" });
+
                 endpoints.MapControllerRoute(name: "article_page_creation", pattern: "article/create_new_article", new { controller = "Article", action = "CreateNewArticle", page_name = "article_page_creation" });
                 endpoints.MapControllerRoute(name: "article_lookup_comments", pattern: "article/GetArticleComments", new { controller = "Article", action = "GetArticleComments", page_name = "article_lookup_comments" });
                 endpoints.MapControllerRoute(name: "article_edit_comments", pattern: "article/edit_article_comments", new { controller = "Article", action = "EditArticleComments", page_name = "article_edit_comments" });

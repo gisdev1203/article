@@ -1,7 +1,10 @@
 ﻿namespace DomainModel.ObjectList
 {
-    public static class UserCustom
+    public class UserCustom
     {
-        public static int GetId() { return 1; }
+        public int Id { get; set; }
+        public string First_name { get; set; }
+        public string Last_name { get; set; }
+
     }
 }

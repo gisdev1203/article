@@ -167,6 +167,20 @@ const tinycomments_lookup = ({ conversationUid }, done, fail) => {
         }
         const comments = await convResp.json();
 
+        const usersResp = await fetch('/article/getUserDataList/', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+        });
+        if (!usersResp.ok) {
+            throw new Error('Failed to get users');
+        }
+       
+        const users = await usersResp.json();
+        const getUser = (userId) => users.find((u) => u.id === userId);
+        const getName = (user) => (user.first_name +" "+ user.last_name);
         return {
             conversation: {
                 uid: conversationUid,
@@ -176,7 +190,7 @@ const tinycomments_lookup = ({ conversationUid }, done, fail) => {
                     content: comment.comments,
                     modifiedAt: comment.modified_at,
                     uid: comment.id_comment,
-                    authorName: "test_User",
+                    authorName: getName(getUser(comment.user_Id)),
                     commentUid: comment.id_comment,
                 })),
             },
@@ -194,14 +208,14 @@ const tinycomments_lookup = ({ conversationUid }, done, fail) => {
 
 tinymce.init({
     selector: 'textarea#comments-callback',
-    language: 'fr_FR',
+    //language: 'fr_FR',
     height: 800,
     plugins: 'code tinycomments help lists',
     toolbar:
-        'undo redo | blocks | ' +
+        'undo redo | blocks | language | ' +
         'bold italic backcolor | alignleft aligncenter ' +
         'alignright alignjustify | bullist numlist outdent indent | ' +
-        'removeformat | addcomment showcomments | help',
+        'removeformat | addcomment showcomments | help ',
     menubar: 'file edit view insert format tc',
     menu: {
         tc: {
@@ -209,6 +223,12 @@ tinymce.init({
             items: 'addcomment showcomments deleteallconversations',
         },
     },
+    content_langs: [
+        { title: 'English', code: 'en' },
+        { title: 'French', code: 'fr_FR' },
+        { title: 'German', code: 'de' },
+    ],
+    language: 'fr_FR',
     tinycomments_mode: 'callback',
     tinycomments_create,
     tinycomments_reply,
@@ -274,8 +294,14 @@ tinymce.init({
         editor.on('SkinLoaded', () => {
             editor.execCommand('ToggleSidebar', false, 'showcomments');
         });
-    },
+    },   
+
 });
+
+// Function to switch language dynamically
+function switchLanguage(language) {
+    tinymce.activeEditor.setLanguage(language);
+}
 
 //We can use JavaScript's UUID package, but for now below solution is more robust! 
 function generateUUID() {
@@ -287,7 +313,6 @@ function generateUUID() {
     });
     return uuid;
 }
-
 
 function saveArticle() {
     var editorContent = tinymce.get('comments-callback').getContent();
@@ -323,7 +348,7 @@ function autoSaveArticle() {
         url: "/article/AutoSaveArticle",
         data: { content: editorContent, id: id_article },
         success: function (result) {
-            if (!result.success) {                
+            if (!result.success) { 
                 console.error("Failed to save content.");
             }
         },
@@ -375,6 +400,3 @@ function getArticleForm(formData, article_type) {
 $("#submitButton").click(function () {
     saveArticle();
 })
-
-
-
