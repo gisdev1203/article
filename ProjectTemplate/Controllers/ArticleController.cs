@@ -51,7 +51,7 @@ namespace ProjectTemplate.Controllers
 
         public IActionResult AutoSaveArticle(string content, int id)
         {
-             UserCustom user = articleRepository.GetUserCustom(1);
+            UserCustom user = articleRepository.GetUserCustom(1);
             int user_id = user.Id;
             ArticleTemp article_temp = articleRepository.GetArticleTemp(id, user_id);
 

@@ -249,7 +249,6 @@ namespace DomainModel.Concrete
             return true; //TODO: need to handle delete
         }
 
-
         public UserCustom GetUserCustom(int id)
         {
             string sql = "SELECT id, first_name, last_name FROM ident where id = @A";
